@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tech Innovation Summit 2025 - Schedule</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <h1 class="logo">🚀 Tech Innovation Summit 2025</h1>
+            <p class="subtitle">March 15-18 • 4 Days • 4 Halls • Expert Speakers</p>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="container">
+            <!-- Hall Navigation -->
+            <nav class="hall-nav" id="hall-nav">
+                <!-- Dynamic hall buttons will be inserted here -->
+            </nav>
+
+            <!-- Loading State -->
+            <div id="loading" class="loading">
+                <div class="spinner"></div>
+                <p>Loading conference schedule...</p>
+            </div>
+
+            <!-- Error State -->
+            <div id="error" class="error hidden">
+                <div class="error-content">
+                    <h3>❌ Unable to Load Schedule</h3>
+                    <p>Please check your connection and try again.</p>
+                    <button onclick="location.reload()" class="retry-btn">🔄 Retry</button>
+                </div>
+            </div>
+
+            <!-- Schedule Display -->
+            <div id="schedule-container" class="schedule-container hidden">
+                <div class="current-hall">
+                    <h2 id="hall-title">Loading...</h2>
+                    <p id="hall-details">Please wait...</p>
+                </div>
+
+                <!-- Day Tabs -->
+                <div class="day-tabs" id="day-tabs">
+                    <button class="day-tab active" data-day="1">📅 Day 1</button>
+                    <button class="day-tab" data-day="2">📅 Day 2</button>
+                    <button class="day-tab" data-day="3">📅 Day 3</button>
+                    <button class="day-tab" data-day="4">📅 Day 4</button>
+                </div>
+
+                <!-- Schedule Grid -->
+                <div class="schedule-grid" id="schedule-grid">
+                    <!-- Dynamic content will be inserted here -->
+                </div>
+
+                <!-- Quick Stats -->
+                <div class="stats-bar">
+                    <div class="stat">
+                        <span class="stat-number" id="total-sessions">-</span>
+                        <span class="stat-label">Sessions Today</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number" id="current-hall-capacity">-</span>
+                        <span class="stat-label">Hall Capacity</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number" id="unique-speakers">-</span>
+                        <span class="stat-label">Speakers</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Speaker Details Modal -->
+    <div id="speaker-modal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close" onclick="app.closeModal()">&times;</span>
+            <div class="speaker-details">
+                <div class="speaker-header">
+                    <h3 id="modal-speaker-name">Loading...</h3>
+                    <span id="modal-speaker-code" class="speaker-code">SP000</span>
+                </div>
+                <p id="modal-speaker-title" class="speaker-position">Loading...</p>
+                
+                <div class="speaker-bio">
+                    <h4>📝 About the Speaker</h4>
+                    <p id="modal-speaker-bio">Loading biography...</p>
+                </div>
+                
+                <div class="speaker-contact">
+                    <h4>📞 Contact Information</h4>
+                    <p>📧 <span id="modal-speaker-email">Loading...</span></p>
+                    <p>📱 <span id="modal-speaker-phone">Loading...</span></p>
+                </div>
+
+                <div class="speaker-sessions">
+                    <h4>🎤 Sessions by this Speaker</h4>
+                    <div id="speaker-sessions-list">Loading sessions...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 Tech Innovation Summit. All rights reserved. | Organized by A1 Logistics</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

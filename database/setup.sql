@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS halls (
   capacity INT NOT NULL,
   location VARCHAR(200),
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (conference_id) REFERENCES conferences(conference_id)
+  FOREIGN KEY (conference_id) REFERENCES conferences(conference_id) ON DELETE CASCADE
 );
 
 -- Speakers table
@@ -61,10 +61,10 @@ CREATE TABLE IF NOT EXISTS schedules (
   session_description TEXT,
   status ENUM('confirmed', 'pending', 'cancelled') DEFAULT 'confirmed',
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (conference_id) REFERENCES conferences(conference_id),
-  FOREIGN KEY (speaker_id) REFERENCES speakers(speaker_id),
-  FOREIGN KEY (hall_id) REFERENCES halls(hall_id),
-  FOREIGN KEY (slot_id) REFERENCES time_slots(slot_id),
+  FOREIGN KEY (conference_id) REFERENCES conferences(conference_id) ON DELETE CASCADE,
+  FOREIGN KEY (speaker_id) REFERENCES speakers(speaker_id) ON DELETE CASCADE,
+  FOREIGN KEY (hall_id) REFERENCES halls(hall_id) ON DELETE CASCADE,
+  FOREIGN KEY (slot_id) REFERENCES time_slots(slot_id) ON DELETE CASCADE,
   UNIQUE KEY unique_schedule (hall_id, slot_id)
 );
 
@@ -89,6 +89,16 @@ INSERT INTO speakers (speaker_code, full_name, email, phone, title, bio) VALUES
 ('SP006', 'Lisa Chen', 'lisa.chen@email.com', '+91-9876543215', 'UX Design Director', 'Award-winning designer creating intuitive user experiences for global products.'),
 ('SP007', 'Mike Garcia', 'mike.garcia@email.com', '+91-9876543216', 'Blockchain Developer', 'Building decentralized applications and smart contract solutions.'),
 ('SP008', 'Anna Martinez', 'anna.martinez@email.com', '+91-9876543217', 'Data Science Manager', 'Leading data science teams in extracting business insights from big data.');
+
+INSERT INTO speakers (speaker_code, full_name, email, phone, title, bio) VALUES
+('SP009', 'Priya Sharma', 'priya.sharma@email.com', '+91-9876543218', 'IoT Solutions Architect', 'Expert in smart devices and IoT ecosystems.'),
+('SP010', 'Rahul Mehra', 'rahul.mehra@email.com', '+91-9876543219', 'Mobile App Developer', 'Building scalable mobile apps for startups and enterprises.'),
+('SP011', 'Emily Clark', 'emily.clark@email.com', '+91-9876543220', 'AI Ethics Researcher', 'Researching ethical implications of artificial intelligence.'),
+('SP012', 'Carlos Rivera', 'carlos.rivera@email.com', '+91-9876543221', 'Cloud Security Analyst', 'Specialist in securing cloud infrastructure.'),
+('SP013', 'Sofia Rossi', 'sofia.rossi@email.com', '+91-9876543222', 'Agile Coach', 'Helping teams adopt agile methodologies.'),
+('SP014', 'Tom Lee', 'tom.lee@email.com', '+91-9876543223', 'Full Stack Developer', 'Experienced in MERN and LAMP stacks.'),
+('SP015', 'Yuki Tanaka', 'yuki.tanaka@email.com', '+91-9876543224', 'Robotics Engineer', 'Designing and building autonomous robots.'),
+('SP016', 'Fatima Al-Farsi', 'fatima.alfarsi@email.com', '+91-9876543225', 'Big Data Analyst', 'Turning massive datasets into actionable insights.');
 
 -- Insert time slots for 4 days
 INSERT INTO time_slots (conference_id, day_number, start_time, end_time, slot_name, slot_order) VALUES
@@ -131,9 +141,24 @@ INSERT INTO schedules (conference_id, speaker_id, hall_id, slot_id, session_titl
 (1, 3, 2, 5, 'Enterprise Security Frameworks'),
 (1, 4, 3, 5, 'Change Management in Digital Era'),
 (1, 1, 4, 5, 'Machine Learning Algorithms'),
-
--- Continue with more sample data...
 (1, 6, 1, 6, 'Design Thinking Workshop'),
 (1, 7, 2, 6, 'Smart Contracts Development'),
 (1, 8, 3, 6, 'Predictive Analytics'),
-(1, 5, 4, 6, 'Automated Testing Strategies');
+(1, 5, 4, 6, 'Automated Testing Strategies'),
+(1, 9, 1, 9, 'IoT for Smart Cities'),
+(1, 10, 2, 9, 'Building Mobile Apps at Scale'),
+(1, 11, 3, 9, 'Ethics in AI: Challenges and Solutions'),
+(1, 12, 4, 9, 'Cloud Security Best Practices'),
+(1, 13, 1, 10, 'Agile Transformation Stories'),
+(1, 14, 2, 10, 'Modern Full Stack Development'),
+(1, 15, 3, 10, 'Robotics in Industry 4.0'),
+(1, 16, 4, 10, 'Big Data for Business Growth'),
+(1, 9, 1, 13, 'IoT Security Fundamentals'),
+(1, 10, 2, 13, 'Cross-Platform Mobile Development'),
+(1, 11, 3, 13, 'Responsible AI Deployment'),
+(1, 12, 4, 13, 'Securing Multi-Cloud Environments'),
+(1, 13, 1, 14, 'Scaling Agile in Large Organizations'),
+(1, 14, 2, 14, 'Serverless Architectures'),
+(1, 15, 3, 14, 'Robotics for Healthcare'),
+(1, 16, 4, 14, 'Data Visualization Techniques');
+

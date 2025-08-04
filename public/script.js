@@ -59,6 +59,7 @@ class ConferenceSchedule {
 
             // Create hall navigation
             this.createHallNavigation();
+            this.renderSpeakersDirectory();
 
             // Hide loading, show content
             document.getElementById('loading').classList.add('hidden');
@@ -213,27 +214,39 @@ class ConferenceSchedule {
     }
 
     updateStats() {
-        // Count sessions for current hall and day
-        const currentSessions = this.scheduleData.filter(item => 
-            item.hall_id === this.currentHall && 
-            item.day_number === this.currentDay
-        );
+    // Count sessions for current hall and day
+    const currentSessions = this.scheduleData.filter(item => 
+        item.hall_id === this.currentHall && 
+        item.day_number === this.currentDay
+    );
 
-        // Get current hall capacity
-        const currentHallData = this.hallsData.find(h => h.hall_id === this.currentHall);
-        
-        // Count unique speakers for current day across all halls
-        const todaySpeakers = [...new Set(
-            this.scheduleData
-                .filter(item => item.day_number === this.currentDay)
-                .map(item => item.speaker_id)
-        )];
+    // Get current hall capacity
+    const currentHallData = this.hallsData.find(h => h.hall_id === this.currentHall);
 
-        // Update stats display
-        document.getElementById('total-sessions').textContent = currentSessions.length;
-        document.getElementById('current-hall-capacity').textContent = currentHallData ? currentHallData.capacity : '-';
-        document.getElementById('unique-speakers').textContent = todaySpeakers.length;
+    // Update stats display
+    document.getElementById('total-sessions').textContent = currentSessions.length;
+    document.getElementById('current-hall-capacity').textContent = currentHallData ? currentHallData.capacity : '-';
+    // Show total speakers in the conference
+    document.getElementById('unique-speakers').textContent = this.speakersData.length;
+}
+    renderSpeakersDirectory() {
+    const speakersList = document.getElementById('speakers-list');
+    if (!speakersList) return;
+    if (!this.speakersData || this.speakersData.length === 0) {
+        speakersList.innerHTML = '<p>No speakers found.</p>';
+        return;
     }
+    speakersList.innerHTML = this.speakersData.map(speaker => `
+        <div class="speaker-card" onclick="app.showSpeakerModal(${speaker.speaker_id})">
+            <h4>${speaker.full_name}</h4>
+            <div class="speaker-meta">
+                <span>👤 ${speaker.speaker_code}</span>
+                <span>${speaker.title || ''}</span>
+                <span>${speaker.email}</span>
+            </div>
+        </div>
+    `).join('');
+}
 
     formatTime(timeString) {
         // Convert 24h format to 12h format

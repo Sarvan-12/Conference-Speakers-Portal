@@ -680,3 +680,32 @@ body {
 .time-slot:nth-child(2) { animation-delay: 0.2s; }
 .time-slot:nth-child(3) { animation-delay: 0.3s; }
 .time-slot:nth-child(4) { animation-delay: 0.4s; }
+
+.speakers-directory {
+    margin: 2rem 0;
+    padding: 1rem;
+    background: #f9f9f9;
+    border-radius: 8px;
+}
+#speakers-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+.speaker-card {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 1rem;
+    width: 220px;
+    cursor: pointer;
+    transition: box-shadow 0.2s;
+}
+.speaker-card:hover {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+.speaker-meta span {
+    display: block;
+    font-size: 0.95em;
+    color: #555;
+}

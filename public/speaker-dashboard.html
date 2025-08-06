@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Speaker Dashboard - Conference Portal</title>
+    <link rel="stylesheet" href="speaker-dashboard.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Header -->
+        <header class="dashboard-header">
+            <div class="header-content">
+                <div class="speaker-info">
+                    <h1 id="speakerName">Loading...</h1>
+                    <p id="speakerCode">Speaker Dashboard</p>
+                </div>
+                <div class="header-actions">
+                    <button class="logout-btn" onclick="logout()">
+                        <span>🚪</span>
+                        Logout
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="dashboard-main">
+            <!-- Stats Cards -->
+            <section class="stats-section">
+                <div class="stats-grid">
+                    <div class="stat-card sessions-card">
+                        <div class="stat-icon">📅</div>
+                        <div class="stat-info">
+                            <h3 id="totalSessions">0</h3>
+                            <p>Total Sessions</p>
+                        </div>
+                    </div>
+                    <div class="stat-card uploads-card">
+                        <div class="stat-icon">📎</div>
+                        <div class="stat-info">
+                            <h3 id="totalUploads">0</h3>
+                            <p>Files Uploaded</p>
+                        </div>
+                    </div>
+                    <div class="stat-card pending-card">
+                        <div class="stat-icon">⏳</div>
+                        <div class="stat-info">
+                            <h3 id="pendingUploads">0</h3>
+                            <p>Pending Uploads</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Schedule Section -->
+            <section class="schedule-section">
+                <h2>📋 Your Schedule</h2>
+                <div id="scheduleContainer" class="schedule-container">
+                    <div class="loading-spinner">🔄 Loading your schedule...</div>
+                </div>
+            </section>
+
+            <!-- Profile Section -->
+            <section class="profile-section">
+                <h2>👤 Your Profile</h2>
+                <div class="profile-card">
+                    <div class="profile-info">
+                        <div class="info-group">
+                            <label>Full Name</label>
+                            <p id="profileName">Loading...</p>
+                        </div>
+                        <div class="info-group">
+                            <label>Email</label>
+                            <p id="profileEmail">Loading...</p>
+                        </div>
+                        <div class="info-group">
+                            <label>Phone</label>
+                            <p id="profilePhone">Loading...</p>
+                        </div>
+                        <div class="info-group">
+                            <label>Title</label>
+                            <p id="profileTitle">Loading...</p>
+                        </div>
+                        <div class="info-group full-width">
+                            <label>Biography</label>
+                            <p id="profileBio">Loading...</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="speaker-dashboard.js"></script>
+</body>
+</html>

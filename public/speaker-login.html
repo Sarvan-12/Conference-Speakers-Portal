@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Speaker Login - Conference Portal</title>
+    <link rel="stylesheet" href="speaker-login.css">
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <h1>🎤 Speaker Portal</h1>
+                <p>Enter your unique speaker code to access your dashboard</p>
+            </div>
+            
+            <form id="speakerLoginForm" class="login-form">
+                <div class="form-group">
+                    <label for="speakerCode">Speaker Code</label>
+                    <input 
+                        type="text" 
+                        id="speakerCode" 
+                        name="speakerCode" 
+                        placeholder="Enter your code (e.g., SP001)" 
+                        required 
+                        maxlength="10"
+                        style="text-transform: uppercase;"
+                    >
+                    <small>Your unique code was provided in your invitation email</small>
+                </div>
+                
+                <button type="submit" class="login-submit-btn">
+                    <span class="btn-text">Access Dashboard</span>
+                    <span class="btn-loader" style="display: none;">🔄 Verifying...</span>
+                </button>
+            </form>
+            
+            <div class="login-help">
+                <p>Don't have your speaker code? <a href="mailto:admin@conference.com">Contact Admin</a></p>
+                <a href="index.html" class="back-link">← Back to Schedule</a>
+            </div>
+        </div>
+        
+        <div id="errorMessage" class="error-message" style="display: none;"></div>
+    </div>
+    
+    <script src="speaker-login.js"></script>
+</body>
+</html>

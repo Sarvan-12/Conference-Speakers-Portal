@@ -180,6 +180,9 @@ app.get('/api/speaker/:speakerId', async (req, res) => {
 });
 
 // Get time slots for a conference
+// ...existing code...
+
+// Get time slots for a conference
 app.get('/api/timeslots', async (req, res) => {
   try {
     const conferenceId = req.query.conference_id || process.env.DEFAULT_CONFERENCE_ID;
@@ -192,6 +195,94 @@ app.get('/api/timeslots', async (req, res) => {
     console.error('Error fetching time slots:', error);
     res.status(500).json({ error: 'Failed to fetch time slots' });
   }
+});
+
+// =================== NEW SPEAKER ROUTES ===================
+
+// Speaker Authentication Route
+app.post('/api/speaker/login', async (req, res) => {
+    try {
+        const { speakerCode } = req.body;
+        
+        if (!speakerCode) {
+            return res.status(400).json({ error: 'Speaker code is required' });
+        }
+        
+        // Query speaker by code
+        const [speakers] = await db.execute(
+            'SELECT * FROM speakers WHERE speaker_code = ?',
+            [speakerCode]
+        );
+        
+        if (speakers.length === 0) {
+            return res.status(404).json({ error: 'Invalid speaker code' });
+        }
+        
+        const speaker = speakers[0];
+        
+        // Get speaker's schedule
+        const [schedule] = await db.execute(`
+            SELECT 
+                sch.session_title,
+                h.hall_name,
+                h.capacity,
+                ts.day_number,
+                ts.start_time,
+                ts.end_time,
+                ts.slot_name,
+                sch.schedule_id
+            FROM schedules sch
+            JOIN halls h ON sch.hall_id = h.hall_id
+            JOIN time_slots ts ON sch.slot_id = ts.slot_id
+            WHERE sch.speaker_id = ?
+            ORDER BY ts.day_number, ts.start_time
+        `, [speaker.speaker_id]);
+        
+        res.json({
+            speaker: {
+                speaker_id: speaker.speaker_id,
+                speaker_code: speaker.speaker_code,
+                full_name: speaker.full_name,
+                email: speaker.email,
+                phone: speaker.phone,
+                title: speaker.title,
+                bio: speaker.bio
+            },
+            schedule: schedule,
+            total_sessions: schedule.length
+        });
+        
+    } catch (error) {
+        console.error('Speaker login error:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Get Speaker Profile by Code
+app.get('/api/speaker/profile/:code', async (req, res) => {
+    try {
+        const { code } = req.params;
+        
+        const [speakers] = await db.execute(
+            'SELECT * FROM speakers WHERE speaker_code = ?',
+            [code]
+        );
+        
+        if (speakers.length === 0) {
+            return res.status(404).json({ error: 'Speaker not found' });
+        }
+        
+        const speaker = speakers[0];
+        
+        // Remove sensitive info if needed
+        delete speaker.speaker_id; // Keep ID private
+        
+        res.json(speaker);
+        
+    } catch (error) {
+        console.error('Profile fetch error:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
 });
 
 // Serve pages

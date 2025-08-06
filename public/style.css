@@ -709,3 +709,74 @@ body {
     font-size: 0.95em;
     color: #555;
 }
+
+/* ADD THESE STYLES TO YOUR EXISTING style.css */
+
+/* Login Options Styling */
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.login-options {
+    display: flex;
+    gap: 15px;
+}
+
+.login-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 25px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: white;
+    text-decoration: none;
+    font-size: 14px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.speaker-login-btn {
+    background: linear-gradient(135deg, #4299e1, #3182ce);
+}
+
+.admin-login-btn {
+    background: linear-gradient(135deg, #38a169, #2f855a);
+}
+
+.login-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+}
+
+.login-icon {
+    font-size: 16px;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .header-content {
+        flex-direction: column;
+        gap: 20px;
+        text-align: center;
+    }
+    
+    .login-options {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .login-btn {
+        justify-content: center;
+        width: 100%;
+    }
+}

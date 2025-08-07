@@ -7,21 +7,31 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <header class="main-header">
-    <div class="header-content">
-        <div class="conference-info">
-            <h1>🚀 Tech Innovation Summit 2025</h1>
-            <p>March 15-18 • 4 Days • 4 Halls • Expert Speakers</p>
+    <header class="main-header" style="background: linear-gradient(90deg, #1a237e 60%, #3949ab 100%); color: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.07); margin-bottom: 32px;">
+    <div class="header-content" style="display: flex; align-items: center; justify-content: space-between; max-width: 1200px; margin: 0 auto; padding: 24px 32px;">
+        <div class="conference-info" style="display: flex; align-items: center;">
+            <div class="conference-logo" style="font-size: 2.5rem; margin-right: 18px;">🚀</div>
+            <div>
+                <h1 style="margin: 0; font-size: 2.1rem; font-weight: 700; letter-spacing: 1px;">Tech Innovation Summit 2025</h1>
+                <p style="margin: 4px 0 0 0; font-size: 1.1rem; color: #c5cae9;">
+                    <span style="margin-right: 12px;">📅 March 15-18</span>
+                    <span style="margin-right: 12px;">| 4 Days</span>
+                    <span style="margin-right: 12px;">| 4 Halls</span>
+                    <span>| Expert Speakers</span>
+                </p>
+            </div>
         </div>
-        
-        <!-- ADD THIS NEW SECTION -->
-        <div class="login-options">
-            <button class="login-btn speaker-login-btn" onclick="window.location.href='speaker-login.html'">
-                <span class="login-icon">👤</span>
+        <div class="login-options" style="display: flex; gap: 14px;">
+            <button class="login-btn speaker-login-btn"
+                onclick="window.location.href='speaker-login.html'"
+                style="background: #fff; color: #1a237e; border: none; border-radius: 6px; padding: 10px 22px; font-size: 1rem; font-weight: 600; display: flex; align-items: center; box-shadow: 0 2px 8px rgba(26,35,126,0.08); cursor: pointer; transition: background 0.2s;">
+                <span class="login-icon" style="font-size: 1.3rem; margin-right: 8px;">👤</span>
                 Speaker Login
             </button>
-            <button class="login-btn admin-login-btn" onclick="window.location.href='admin-login.html'">
-                <span class="login-icon">🔧</span>
+            <button class="login-btn admin-login-btn"
+                onclick="window.location.href='admin-login.html'"
+                style="background: #3949ab; color: #fff; border: none; border-radius: 6px; padding: 10px 22px; font-size: 1rem; font-weight: 600; display: flex; align-items: center; box-shadow: 0 2px 8px rgba(26,35,126,0.08); cursor: pointer; transition: background 0.2s;">
+                <span class="login-icon" style="font-size: 1.3rem; margin-right: 8px;">🔧</span>
                 Admin Panel
             </button>
         </div>
@@ -128,7 +138,7 @@
 
     <footer class="footer">
         <div class="container">
-            <p>&copy; 2025 Tech Innovation Summit. All rights reserved. | Organized by A1 Logistics</p>
+            <p>&copy; 2025 Tech Innovation Summit. All rights reserved. | Organized by A1 Logics</p>
         </div>
     </footer>
 

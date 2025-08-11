@@ -1,8 +1,9 @@
 const express = require('express');
 const mysql = require('mysql2/promise');
 const cors = require('cors');
-const path = require('path');
 const multer = require('multer');
+const path = require('path');
+const fs = require('fs-extra');
 require('dotenv').config();
 
 const app = express();
@@ -11,18 +12,17 @@ const PORT = process.env.PORT || 3000;
 // Middleware
 app.use(cors());
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
 
-// Database connection
+// Database configuration
 const dbConfig = {
-  host: process.env.DB_HOST || 'localhost',
-  user: process.env.DB_USER || 'root',
-  password: process.env.DB_PASSWORD || '',
-  database: process.env.DB_NAME || 'conference_portal',
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0
 };
 
 let db;
@@ -159,28 +159,95 @@ app.get('/api/schedule/hall/:hallId', async (req, res) => {
   }
 });
 
-// Get speaker details
-app.get('/api/speaker/:speakerId', async (req, res) => {
-  try {
-    const { speakerId } = req.params;
-    const [rows] = await db.execute(
-      'SELECT * FROM speakers WHERE speaker_id = ?',
-      [speakerId]
-    );
-    
-    if (rows.length === 0) {
-      return res.status(404).json({ error: 'Speaker not found' });
+// Get Speaker Profile + Schedule by Code
+app.get('/api/speaker/profile/:code', async (req, res) => {
+    try {
+        const { code } = req.params;
+
+        // Get speaker
+        const [speakers] = await db.execute(
+            'SELECT * FROM speakers WHERE speaker_code = ?',
+            [code]
+        );
+        if (speakers.length === 0) {
+            return res.status(404).json({ error: 'Speaker not found' });
+        }
+        const speaker = speakers[0];
+
+        // Get schedule
+        const [schedule] = await db.execute(`
+            SELECT 
+                sch.session_title,
+                h.hall_name,
+                h.capacity,
+                ts.day_number,
+                ts.start_time,
+                ts.end_time,
+                ts.slot_name,
+                sch.schedule_id
+            FROM schedules sch
+            JOIN halls h ON sch.hall_id = h.hall_id
+            JOIN time_slots ts ON sch.slot_id = ts.slot_id
+            WHERE sch.speaker_id = ?
+            ORDER BY ts.day_number, ts.start_time
+        `, [speaker.speaker_id]);
+
+        res.json({
+            speaker: {
+                speaker_id: speaker.speaker_id,
+                speaker_code: speaker.speaker_code,
+                full_name: speaker.full_name,
+                email: speaker.email,
+                phone: speaker.phone,
+                title: speaker.title,
+                bio: speaker.bio
+            },
+            schedule: schedule,
+            total_sessions: schedule.length
+        });
+    } catch (err) {
+        console.error('Profile fetch error:', err);
+        res.status(500).json({ error: 'Internal server error' });
     }
-    
-    res.json(rows[0]);
-  } catch (error) {
-    console.error('Error fetching speaker:', error);
-    res.status(500).json({ error: 'Failed to fetch speaker' });
-  }
 });
 
-// Get time slots for a conference
-// ...existing code...
+// Get Uploaded Files for Speaker
+app.get('/api/speaker/files/:code', async (req, res) => {
+    try {
+        const { code } = req.params;
+
+        // Find speaker_id
+        const [speakers] = await db.execute(
+            'SELECT speaker_id FROM speakers WHERE speaker_code = ?',
+            [code]
+        );
+        if (speakers.length === 0) {
+            return res.status(404).json({ error: 'Speaker not found' });
+        }
+        const speakerId = speakers[0].speaker_id;
+
+        // Get uploaded files
+        const [files] = await db.execute(`
+            SELECT 
+                file_id,
+                original_name AS original_filename,
+                stored_filename,
+                file_size,
+                upload_date,
+                hall_id,
+                slot_id
+            FROM uploaded_files
+            WHERE speaker_id = ?
+            ORDER BY upload_date DESC
+        `, [speakerId]);
+
+        res.json(files);
+    } catch (err) {
+        console.error('File fetch error:', err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
 
 // Get time slots for a conference
 app.get('/api/timeslots', async (req, res) => {
@@ -284,6 +351,76 @@ app.get('/api/speaker/profile/:code', async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 });
+
+// =================== FILE UPLOAD ROUTE ===================
+const uploadStorage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        const uploadPath = path.join(__dirname, 'uploads');
+        fs.ensureDirSync(uploadPath); // make sure folder exists
+        cb(null, uploadPath);
+    },
+    filename: (req, file, cb) => {
+        cb(null, Date.now() + '-' + file.originalname);
+    }
+});
+
+const upload = multer({ storage: uploadStorage });
+
+app.post('/api/upload/presentation', upload.single('presentation'), async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ error: 'No file uploaded' });
+        }
+
+        const { speakerCode, hallName, dayNumber, sessionTitle } = req.body;
+
+        // Find speaker_id
+        const [speakers] = await db.execute(
+            'SELECT speaker_id FROM speakers WHERE speaker_code = ?',
+            [speakerCode]
+        );
+        if (speakers.length === 0) {
+            return res.status(404).json({ error: 'Speaker not found' });
+        }
+        const speakerId = speakers[0].speaker_id;
+
+        // Optional: Find hall_id and slot_id
+        const [hall] = await db.execute('SELECT hall_id FROM halls WHERE hall_name = ?', [hallName]);
+        const hallId = hall.length > 0 ? hall[0].hall_id : null;
+
+        const [slot] = await db.execute(
+            'SELECT slot_id FROM time_slots WHERE day_number = ? LIMIT 1',
+            [dayNumber]
+        );
+        const slotId = slot.length > 0 ? slot[0].slot_id : null;
+
+        // Insert file record
+        await db.execute(`
+            INSERT INTO uploaded_files (
+                original_name,
+                stored_filename,
+                file_size,
+                upload_date,
+                hall_id,
+                slot_id,
+                speaker_id
+            ) VALUES (?, ?, ?, NOW(), ?, ?, ?)
+        `, [
+            req.file.originalname,
+            req.file.filename,
+            req.file.size,
+            hallId,
+            slotId,
+            speakerId
+        ]);
+
+        res.json({ success: true, message: 'File uploaded successfully!' });
+    } catch (err) {
+        console.error('Upload error:', err);
+        res.status(500).json({ error: 'Upload failed' });
+    }
+});
+
 
 // Serve pages
 app.get('/', (req, res) => {

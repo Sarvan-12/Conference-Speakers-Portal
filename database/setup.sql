@@ -68,6 +68,25 @@ CREATE TABLE IF NOT EXISTS schedules (
   UNIQUE KEY unique_schedule (hall_id, slot_id)
 );
 
+-- Add files table for tracking uploads
+CREATE TABLE uploaded_files (
+    file_id INT PRIMARY KEY AUTO_INCREMENT,
+    conference_id INT,
+    speaker_id INT,
+    hall_id INT,
+    slot_id INT,
+    original_name VARCHAR(255),
+    stored_filename VARCHAR(255),
+    file_path VARCHAR(500),
+    file_size INT,
+    upload_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (conference_id) REFERENCES conferences(conference_id),
+    FOREIGN KEY (speaker_id) REFERENCES speakers(speaker_id),
+    FOREIGN KEY (hall_id) REFERENCES halls(hall_id),
+    FOREIGN KEY (slot_id) REFERENCES time_slots(slot_id),
+    UNIQUE KEY unique_speaker_session (speaker_id, hall_id, slot_id)
+);
+
 -- Insert sample conference
 INSERT INTO conferences (name, start_date, end_date, total_days, description) VALUES
 ('Tech Innovation Summit 2025', '2025-03-15', '2025-03-18', 4, 'Annual technology conference focusing on AI, Cloud, and Digital Transformation');

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - Conference Portal</title>
+    <link rel="stylesheet" href="admin-login.css">
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <h1>🔧 Admin Portal</h1>
+                <p>Conference Management System</p>
+            </div>
+            
+            <form id="adminLoginForm" class="login-form">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input
+                        type="text"
+                        id="username"
+                        name="username"
+                        placeholder="Enter admin username"
+                        required
+                    >
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        placeholder="Enter admin password"
+                        required
+                    >
+                </div>
+                
+                <button type="submit" class="login-submit-btn">
+                    <span class="btn-text">Access Admin Panel</span>
+                    <span class="btn-loader" style="display: none;">🔄 Verifying...</span>
+                </button>
+            </form>
+            
+            <div class="login-help">
+                <p>Admin access required for conference management</p>
+                <a href="index.html" class="back-link">← Back to Schedule</a>
+            </div>
+            
+            <div id="errorMessage" class="error-message" style="display: none;"></div>
+        </div>
+    </div>
+    
+    <script>
+        // Temporary admin login (will be enhanced in Day 5)
+        document.getElementById('adminLoginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            // Temporary credentials (replace with real authentication in Day 5)
+            if (username === 'admin' && password === 'admin123') {
+                localStorage.setItem('adminAuth', 'true');
+                alert('Admin panel coming in Day 5! For now, this just validates login.');
+                window.location.href = 'index.html';
+            } else {
+                document.getElementById('errorMessage').textContent = 'Invalid credentials';
+                document.getElementById('errorMessage').style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>

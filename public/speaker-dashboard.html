@@ -5,91 +5,137 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Speaker Dashboard - Conference Portal</title>
     <link rel="stylesheet" href="speaker-dashboard.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@300;400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="dashboard-container">
-        <!-- Header -->
+        <!-- Header Section -->
         <header class="dashboard-header">
             <div class="header-content">
-                <div class="speaker-info">
-                    <h1 id="speakerName">Loading...</h1>
-                    <p id="speakerCode">Speaker Dashboard</p>
+                <div class="logo-section">
+                    <h1>🎤 Speaker Dashboard</h1>
+                    <p class="conference-name">Tech Innovation Summit 2025</p>
                 </div>
-                <div class="header-actions">
-                    <button class="logout-btn" onclick="logout()">
-                        <span>🚪</span>
-                        Logout
-                    </button>
+                <div class="user-info">
+                    <div class="speaker-badge">
+                        <span class="speaker-code" id="speakerCode">SP001</span>
+                        <span class="speaker-name" id="speakerName">Loading...</span>
+                    </div>
+                    <button class="logout-btn" onclick="logout()">Logout</button>
                 </div>
             </div>
         </header>
 
-        <!-- Main Content -->
-        <main class="dashboard-main">
-            <!-- Stats Cards -->
-            <section class="stats-section">
-                <div class="stats-grid">
-                    <div class="stat-card sessions-card">
-                        <div class="stat-icon">📅</div>
-                        <div class="stat-info">
-                            <h3 id="totalSessions">0</h3>
-                            <p>Total Sessions</p>
-                        </div>
-                    </div>
-                    <div class="stat-card uploads-card">
-                        <div class="stat-icon">📎</div>
-                        <div class="stat-info">
-                            <h3 id="totalUploads">0</h3>
-                            <p>Files Uploaded</p>
-                        </div>
-                    </div>
-                    <div class="stat-card pending-card">
-                        <div class="stat-icon">⏳</div>
-                        <div class="stat-info">
-                            <h3 id="pendingUploads">0</h3>
-                            <p>Pending Uploads</p>
-                        </div>
-                    </div>
-                </div>
-            </section>
+        <!-- Statistics Bar -->
+        <div class="stats-bar">
+            <div class="stat-card">
+                <div class="stat-number" id="totalSessions">0</div>
+                <div class="stat-label">Total Sessions</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="uploadedFiles">0</div>
+                <div class="stat-label">Files Uploaded</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="pendingUploads">0</div>
+                <div class="stat-label">Pending Uploads</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="totalSize">0 MB</div>
+                <div class="stat-label">Total File Size</div>
+            </div>
+        </div>
 
+        <!-- Main Content -->
+        <div class="main-content">
             <!-- Schedule Section -->
-            <section class="schedule-section">
-                <h2>📋 Your Schedule</h2>
-                <div id="scheduleContainer" class="schedule-container">
-                    <div class="loading-spinner">🔄 Loading your schedule...</div>
+            <div class="content-section">
+                <div class="section-header">
+                    <h2>📅 Your Schedule & File Management</h2>
+                    <button class="refresh-btn" onclick="refreshData()">🔄 Refresh</button>
                 </div>
-            </section>
+                
+                <div class="schedule-container" id="scheduleContainer">
+                    <!-- Schedule items will be populated by JavaScript -->
+                </div>
+            </div>
 
             <!-- Profile Section -->
-            <section class="profile-section">
-                <h2>👤 Your Profile</h2>
+            <div class="content-section">
+                <div class="section-header">
+                    <h2>👤 Speaker Profile</h2>
+                </div>
+                
                 <div class="profile-card">
                     <div class="profile-info">
-                        <div class="info-group">
-                            <label>Full Name</label>
-                            <p id="profileName">Loading...</p>
-                        </div>
-                        <div class="info-group">
-                            <label>Email</label>
-                            <p id="profileEmail">Loading...</p>
-                        </div>
-                        <div class="info-group">
-                            <label>Phone</label>
-                            <p id="profilePhone">Loading...</p>
-                        </div>
-                        <div class="info-group">
-                            <label>Title</label>
-                            <p id="profileTitle">Loading...</p>
-                        </div>
-                        <div class="info-group full-width">
-                            <label>Biography</label>
-                            <p id="profileBio">Loading...</p>
-                        </div>
+                        <h3 id="profileName">Loading...</h3>
+                        <p class="profile-title" id="profileTitle">Loading...</p>
+                        <p class="profile-email" id="profileEmail">Loading...</p>
+                        <p class="profile-phone" id="profilePhone">Loading...</p>
+                    </div>
+                    <div class="profile-bio">
+                        <h4>Biography</h4>
+                        <p id="profileBio">Loading...</p>
                     </div>
                 </div>
-            </section>
-        </main>
+            </div>
+        </div>
+
+        <!-- File Upload Modal -->
+        <div class="modal" id="uploadModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>📎 Upload Presentation</h3>
+                    <button class="close-btn" onclick="closeUploadModal()">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="session-info" id="sessionInfo">
+                        <p><strong>Session:</strong> <span id="modalSessionTitle"></span></p>
+                        <p><strong>Hall:</strong> <span id="modalHallName"></span></p>
+                        <p><strong>Time:</strong> Day <span id="modalDayNumber"></span>, <span id="modalStartTime"></span></p>
+                    </div>
+                    
+                    <form id="uploadForm" class="upload-form">
+                        <div class="file-upload-area" id="fileUploadArea">
+                            <div class="upload-icon">📁</div>
+                            <div class="upload-text">
+                                <p>Drag and drop your PowerPoint file here</p>
+                                <p>or</p>
+                                <label for="presentationFile" class="file-input-label">Choose File</label>
+                                <input type="file" id="presentationFile" name="presentation" accept=".ppt,.pptx" hidden>
+                            </div>
+                        </div>
+                        
+                        <div class="file-info" id="fileInfo" style="display: none;">
+                            <div class="selected-file">
+                                <span class="file-name" id="selectedFileName"></span>
+                                <span class="file-size" id="selectedFileSize"></span>
+                            </div>
+                        </div>
+                        
+                        <div class="upload-progress" id="uploadProgress" style="display: none;">
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="progressFill"></div>
+                            </div>
+                            <span class="progress-text" id="progressText">0%</span>
+                        </div>
+                        
+                        <div class="upload-buttons">
+                            <button type="button" class="cancel-btn" onclick="closeUploadModal()">Cancel</button>
+                            <button type="submit" class="upload-btn" id="uploadBtn" disabled>Upload Presentation</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading Overlay -->
+        <div class="loading-overlay" id="loadingOverlay">
+            <div class="loading-spinner"></div>
+            <p>Loading your dashboard...</p>
+        </div>
     </div>
 
     <script src="speaker-dashboard.js"></script>

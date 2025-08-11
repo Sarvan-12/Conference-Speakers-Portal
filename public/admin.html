@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Conference Speaker Portal</title>
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+    <header class="admin-header">
+        <div class="container">
+            <h1 class="admin-logo">⚙ Conference Admin Panel</h1>
+            <p class="admin-subtitle">Manage Speakers, Schedules & Conference Settings</p>
+        </div>
+    </header>
+
+    <nav class="admin-nav">
+        <div class="container">
+            <button class="nav-btn active" data-section="speakers">👥 Speakers</button>
+            <button class="nav-btn" data-section="schedule">📅 Schedule</button>
+            <button class="nav-btn" data-section="halls">🏢 Halls</button>
+            <button class="nav-btn" data-section="settings">⚙ Settings</button>
+        </div>
+    </nav>
+
+    <main class="admin-main">
+        <div class="container">
+
+            <!-- Speakers Management Section -->
+            <section id="speakers-section" class="admin-section active">
+                <div class="section-header">
+                    <h2>👥 Speaker Management</h2>
+                    <button class="btn btn-primary" onclick="adminApp.showAddHallForm()">➕ Add New Hall</button>
+                </div>
+                <div class="halls-grid" id="halls-grid">
+                    <!-- Dynamic hall cards will be inserted here -->
+                </div>
+            </section>
+
+            <!-- Settings Section -->
+            <section id="settings-section" class="admin-section">
+                <div class="section-header">
+                    <h2>⚙ Conference Settings</h2>
+                </div>
+                <div class="settings-grid">
+                    <div class="setting-card">
+                        <h3>📊 Conference Statistics</h3>
+                        <div class="stats-display" id="admin-stats">
+                            <!-- Stats will be populated here -->
+                        </div>
+                    </div>
+                    <div class="setting-card">
+                        <h3>🔄 Quick Actions</h3>
+                        <button class="btn btn-secondary" onclick="adminApp.exportSchedule()">📥 Export Schedule</button>
+                        <button class="btn btn-secondary" onclick="adminApp.viewPublicSite()">🌐 View Public Site</button>
+                        <button class="btn btn-warning" onclick="adminApp.resetData()">🗑 Reset All Data</button>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- Add Speaker Modal -->
+    <div id="add-speaker-modal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close" onclick="adminApp.closeModal('add-speaker-modal')">&times;</span>
+            <h3>➕ Add New Speaker</h3>
+            <form id="add-speaker-form" onsubmit="adminApp.addSpeaker(event)">
+                <div class="form-group">
+                    <label for="speaker-name">Full Name *</label>
+                    <input type="text" id="speaker-name" name="full_name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="speaker-email">Email *</label>
+                    <input type="email" id="speaker-email" name="email" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="speaker-phone">Phone</label>
+                    <input type="tel" id="speaker-phone" name="phone">
+                </div>
+
+                <div class="form-group">
+                    <label for="speaker-title">Professional Title *</label>
+                    <input type="text" id="speaker-title" name="title" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="speaker-bio">Biography</label>
+                    <textarea id="speaker-bio" name="bio" rows="4"></textarea>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="adminApp.closeModal('add-speaker-modal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">💾 Save Speaker</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Schedule Modal -->
+    <div id="add-schedule-modal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close" onclick="adminApp.closeModal('add-schedule-modal')">&times;</span>
+            <h3>📅 Add New Session</h3>
+            <form id="add-schedule-form" onsubmit="adminApp.addSchedule(event)">
+                <div class="form-group">
+                    <label for="schedule-speaker">Speaker *</label>
+                    <select id="schedule-speaker" name="speaker_id" required>
+                        <option value="">Select Speaker</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="schedule-hall">Hall *</label>
+                    <select id="schedule-hall" name="hall_id" required>
+                        <option value="">Select Hall</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="schedule-slot">Time Slot *</label>
+                    <select id="schedule-slot" name="slot_id" required>
+                        <option value="">Select Time Slot</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="session-title">Session Title</label>
+                    <input type="text" id="session-title" name="session_title">
+                </div>
+
+                <div class="form-group">
+                    <label for="session-description">Session Description</label>
+                    <textarea id="session-description" name="session_description" rows="3"></textarea>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="adminApp.closeModal('add-schedule-modal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">📅 Schedule Session</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Success/Error Messages -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <footer class="admin-footer">
+        <div class="container">
+            <p>&copy; 2025 Conference Admin Panel | Built for A1 Logistics Internship</p>
+        </div>
+    </footer>
+
+    <script src="admin.js"></script>
+</body>
+</html>

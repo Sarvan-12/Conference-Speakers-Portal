@@ -63,8 +63,7 @@
             // Temporary credentials (replace with real authentication in Day 5)
             if (username === 'admin' && password === 'admin123') {
                 localStorage.setItem('adminAuth', 'true');
-                alert('Admin panel coming in Day 5! For now, this just validates login.');
-                window.location.href = 'index.html';
+                window.location.href = 'admin.html';
             } else {
                 document.getElementById('errorMessage').textContent = 'Invalid credentials';
                 document.getElementById('errorMessage').style.display = 'block';

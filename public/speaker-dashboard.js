@@ -146,19 +146,16 @@ class SpeakerDashboard {
                         ` : ''}
                         
                         <div class="file-actions">
-                            ${hasFile ? `
-                                <button class="btn btn-secondary" onclick="dashboard.replaceFile('${session.schedule_id}', '${session.hall_name}', ${session.day_number}, '${session.session_title}')">
-                                    🔄 Replace File
-                                </button>
-                                <button class="btn btn-danger" onclick="dashboard.deleteFile(${uploadedFile.file_id})">
-                                    🗑️ Delete File
-                                </button>
-                            ` : `
-                                <button class="btn btn-primary" onclick="dashboard.uploadFile('${session.schedule_id}', '${session.hall_name}', ${session.day_number}, '${session.session_title}')">
-                                    📎 Upload Presentation
-                                </button>
-                            `}
-                        </div>
+    ${hasFile ? `
+        <button class="btn btn-danger" onclick="dashboard.deleteFile(${uploadedFile.file_id})">
+            🗑️ Delete File
+        </button>
+    ` : `
+        <button class="btn btn-primary" onclick="dashboard.uploadFile('${session.schedule_id}', '${session.hall_name}', ${session.day_number}, '${session.session_title}')">
+            📎 Upload Presentation
+        </button>
+    `}
+</div>
                     </div>
                 </div>
             `;

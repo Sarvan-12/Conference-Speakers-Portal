@@ -68,23 +68,18 @@ CREATE TABLE IF NOT EXISTS schedules (
   UNIQUE KEY unique_schedule (hall_id, slot_id)
 );
 
--- Add files table for tracking uploads
 CREATE TABLE uploaded_files (
     file_id INT PRIMARY KEY AUTO_INCREMENT,
-    conference_id INT,
-    speaker_id INT,
-    hall_id INT,
-    slot_id INT,
-    original_name VARCHAR(255),
-    stored_filename VARCHAR(255),
-    file_path VARCHAR(500),
+    schedule_id INT NOT NULL,
+    original_name VARCHAR(255) NOT NULL,
+    original_path VARCHAR(500) NOT NULL,
+    stored_filename VARCHAR(255) NOT NULL,
+    stored_path VARCHAR(500) NOT NULL,
     file_size INT,
+    file_type VARCHAR(100),
+    upload_status ENUM('pending', 'processed', 'failed') DEFAULT 'pending',
     upload_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (conference_id) REFERENCES conferences(conference_id),
-    FOREIGN KEY (speaker_id) REFERENCES speakers(speaker_id),
-    FOREIGN KEY (hall_id) REFERENCES halls(hall_id),
-    FOREIGN KEY (slot_id) REFERENCES time_slots(slot_id),
-    UNIQUE KEY unique_speaker_session (speaker_id, hall_id, slot_id)
+    FOREIGN KEY (schedule_id) REFERENCES schedules(schedule_id) ON DELETE CASCADE
 );
 
 -- Insert sample conference
@@ -122,7 +117,7 @@ INSERT INTO speakers (speaker_code, full_name, email, phone, title, bio) VALUES
 -- Insert time slots for 4 days
 INSERT INTO time_slots (conference_id, day_number, start_time, end_time, slot_name, slot_order) VALUES
 -- Day 1
-(1, 1, '10:00:00', '11:00:00', 'Opening Keynote', 1),
+(1, 1, '10:00:00', '11:00:00', 'Opening Keynote', 1), 
 (1, 1, '11:30:00', '12:30:00', 'Morning Technical Session', 2),
 (1, 1, '14:00:00', '15:00:00', 'Afternoon Workshop', 3),
 (1, 1, '15:30:00', '16:30:00', 'Panel Discussion', 4),
@@ -181,3 +176,22 @@ INSERT INTO schedules (conference_id, speaker_id, hall_id, slot_id, session_titl
 (1, 15, 3, 14, 'Robotics for Healthcare'),
 (1, 16, 4, 14, 'Data Visualization Techniques');
 
+INSERT INTO uploaded_files (
+    schedule_id, 
+    original_name, 
+    original_path, 
+    stored_filename, 
+    stored_path, 
+    file_size, 
+    file_type, 
+    upload_status
+) VALUES (
+    1, 
+    'Conference Speaker Portal.pptx',
+    'D:\\conference-portal\\uploads\\Conference Speaker Portal.pptx',
+    '1_SP001_Conference_Speaker_Portal.pptx',
+    'uploads/presentations/Hall_A/',
+    1250000,
+    'pptx',
+    'processed'
+);

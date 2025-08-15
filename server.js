@@ -32,8 +32,6 @@ async function initDatabase() {
   try {
     db = await mysql.createConnection(dbConfig);
     console.log('✅ Connected to MySQL database');
-    
-    // Test the connection
     const [rows] = await db.execute('SELECT 1 as test');
     console.log('✅ Database connection test successful');
   } catch (error) {
@@ -46,8 +44,6 @@ async function initDatabase() {
 async function processUploadedFiles() {
   try {
     console.log('🔄 Starting file processing...');
-    
-    // Get all pending files from database
     const [pendingFiles] = await db.execute(`
       SELECT 
         uf.file_id,
@@ -76,58 +72,40 @@ async function processUploadedFiles() {
     for (const file of pendingFiles) {
       try {
         console.log(`📂 Processing file: ${file.original_name}`);
-        
-        // Check if original file exists
         if (!fs.existsSync(file.original_path)) {
           console.error(`❌ Original file not found: ${file.original_path}`);
-          
-          // Update status to failed
           await db.execute(
             'UPDATE uploaded_files SET upload_status = ? WHERE file_id = ?',
             ['failed', file.file_id]
           );
           continue;
         }
-
-        // Create target directory structure
         const fullStoredPath = path.isAbsolute(file.stored_path)
           ? file.stored_path
           : path.join(__dirname, file.stored_path);
         await fs.ensureDir(fullStoredPath);
         console.log(`📁 Created directory: ${fullStoredPath}`);
-
-        // Full target file path
         const targetFilePath = path.join(fullStoredPath, file.stored_filename);
-        
-        // Copy file from original location to target location
         if (file.original_path !== targetFilePath) {
           await fs.copy(file.original_path, targetFilePath);
         } else {
           console.log('Source and destination are the same, skipping copy.');
         }
         console.log(`✅ File copied to: ${targetFilePath}`);
-
-        // Update database status to processed
         await db.execute(
           'UPDATE uploaded_files SET upload_status = ? WHERE file_id = ?',
           ['processed', file.file_id]
         );
-        
         console.log(`✅ File processing completed for: ${file.stored_filename}`);
-        
       } catch (fileError) {
         console.error(`❌ Error processing file ${file.file_id}:`, fileError);
-        
-        // Update status to failed
         await db.execute(
           'UPDATE uploaded_files SET upload_status = ? WHERE file_id = ?',
           ['failed', file.file_id]
         );
       }
     }
-    
     console.log('🎉 File processing completed!');
-    
   } catch (error) {
     console.error('❌ Error in file processing:', error);
   }
@@ -172,45 +150,43 @@ app.get('/api/speakers', async (req, res) => {
   }
 });
 
+// Add new speaker (auto-generate speaker_code)
+app.post('/api/speakers', async (req, res) => {
+    try {
+        const { full_name, email, phone, title, bio } = req.body;
+        const [rows] = await db.execute('SELECT MAX(speaker_id) AS maxId FROM speakers');
+        const nextId = (rows[0].maxId || 0) + 1;
+        const speakerCode = 'SP' + String(nextId).padStart(3, '0');
+        await db.execute(
+            `INSERT INTO speakers (speaker_code, full_name, email, phone, title, bio)
+             VALUES (?, ?, ?, ?, ?, ?)`,
+            [speakerCode, full_name, email, phone, title, bio]
+        );
+        res.json({ success: true, speaker_code: speakerCode });
+    } catch (err) {
+        console.error('Add speaker error:', err); // <--- Add this line
+        res.status(500).json({ error: 'Failed to add speaker' });
+    }
+});
 // Get complete schedule with joins
 app.get('/api/schedule', async (req, res) => {
   try {
-    const conferenceId = req.query.conference_id || process.env.DEFAULT_CONFERENCE_ID;
-    const query = `
-      SELECT 
-        sch.schedule_id,
-        sch.session_title,
-        sch.session_description,
-        sch.status,
-        sp.speaker_id,
-        sp.speaker_code,
-        sp.full_name as speaker_name,
-        sp.title as speaker_title,
-        sp.bio as speaker_bio,
-        sp.email,
-        sp.phone,
-        h.hall_id,
-        h.hall_name,
-        h.capacity,
-        h.location,
-        ts.slot_id,
-        ts.day_number,
-        ts.start_time,
-        ts.end_time,
-        ts.slot_name,
-        ts.slot_order
-      FROM schedules sch
-      JOIN speakers sp ON sch.speaker_id = sp.speaker_id
-      JOIN halls h ON sch.hall_id = h.hall_id
-      JOIN time_slots ts ON sch.slot_id = ts.slot_id
-      WHERE sch.conference_id = ?
-      ORDER BY h.hall_name, ts.day_number, ts.slot_order
+    let sql = `
+      SELECT s.*, h.hall_name, ts.day_number, ts.slot_name, ts.start_time, ts.end_time, sp.full_name AS speaker_name
+      FROM schedules s
+      JOIN halls h ON s.hall_id = h.hall_id
+      JOIN time_slots ts ON s.slot_id = ts.slot_id
+      JOIN speakers sp ON s.speaker_id = sp.speaker_id
     `;
-    
-    const [rows] = await db.execute(query, [conferenceId]);
+    const params = [];
+    if (req.query.speaker_id) {
+      sql += ' WHERE s.speaker_id = ?';
+      params.push(req.query.speaker_id);
+    }
+    sql += ' ORDER BY ts.day_number, ts.start_time';
+    const [rows] = await db.execute(sql, params);
     res.json(rows);
-  } catch (error) {
-    console.error('Error fetching schedule:', error);
+  } catch (err) {
     res.status(500).json({ error: 'Failed to fetch schedule' });
   }
 });
@@ -220,7 +196,6 @@ app.get('/api/schedule/hall/:hallId', async (req, res) => {
   try {
     const { hallId } = req.params;
     const conferenceId = req.query.conference_id || process.env.DEFAULT_CONFERENCE_ID;
-    
     const query = `
       SELECT 
         sch.schedule_id,
@@ -241,7 +216,6 @@ app.get('/api/schedule/hall/:hallId', async (req, res) => {
       WHERE sch.conference_id = ? AND h.hall_id = ?
       ORDER BY ts.day_number, ts.slot_order
     `;
-    
     const [rows] = await db.execute(query, [conferenceId, hallId]);
     res.json(rows);
   } catch (error) {
@@ -254,8 +228,6 @@ app.get('/api/schedule/hall/:hallId', async (req, res) => {
 app.get('/api/speaker/profile/:code', async (req, res) => {
     try {
         const { code } = req.params;
-
-        // Get speaker
         const [speakers] = await db.execute(
             'SELECT * FROM speakers WHERE speaker_code = ?',
             [code]
@@ -264,8 +236,6 @@ app.get('/api/speaker/profile/:code', async (req, res) => {
             return res.status(404).json({ error: 'Speaker not found' });
         }
         const speaker = speakers[0];
-
-        // Get schedule
         const [schedule] = await db.execute(`
             SELECT 
                 sch.session_title,
@@ -282,7 +252,6 @@ app.get('/api/speaker/profile/:code', async (req, res) => {
             WHERE sch.speaker_id = ?
             ORDER BY ts.day_number, ts.start_time
         `, [speaker.speaker_id]);
-
         res.json({
             speaker: {
                 speaker_id: speaker.speaker_id,
@@ -306,8 +275,6 @@ app.get('/api/speaker/profile/:code', async (req, res) => {
 app.get('/api/speaker/files/:code', async (req, res) => {
     try {
         const { code } = req.params;
-
-        // Find speaker_id
         const [speakers] = await db.execute(
             'SELECT speaker_id FROM speakers WHERE speaker_code = ?',
             [code]
@@ -316,8 +283,6 @@ app.get('/api/speaker/files/:code', async (req, res) => {
             return res.status(404).json({ error: 'Speaker not found' });
         }
         const speakerId = speakers[0].speaker_id;
-
-        // Get uploaded files with schedule info
         const [files] = await db.execute(`
             SELECT 
                 uf.file_id,
@@ -328,7 +293,7 @@ app.get('/api/speaker/files/:code', async (req, res) => {
                 uf.upload_date,
                 s.session_title,
                 h.hall_name,
-                ts.day_number,           -- <-- Added for correct matching
+                ts.day_number,
                 ts.slot_name
             FROM uploaded_files uf
             JOIN schedules s ON uf.schedule_id = s.schedule_id
@@ -337,7 +302,6 @@ app.get('/api/speaker/files/:code', async (req, res) => {
             WHERE s.speaker_id = ?
             ORDER BY uf.upload_date DESC
         `, [speakerId]);
-
         res.json(files);
     } catch (err) {
         console.error('File fetch error:', err);
@@ -366,24 +330,17 @@ app.get('/api/timeslots', async (req, res) => {
 app.post('/api/speaker/login', async (req, res) => {
     try {
         const { speakerCode } = req.body;
-        
         if (!speakerCode) {
             return res.status(400).json({ error: 'Speaker code is required' });
         }
-        
-        // Query speaker by code
         const [speakers] = await db.execute(
             'SELECT * FROM speakers WHERE speaker_code = ?',
             [speakerCode]
         );
-        
         if (speakers.length === 0) {
             return res.status(404).json({ error: 'Invalid speaker code' });
         }
-        
         const speaker = speakers[0];
-        
-        // Get speaker's schedule
         const [schedule] = await db.execute(`
             SELECT 
                 sch.session_title,
@@ -400,7 +357,6 @@ app.post('/api/speaker/login', async (req, res) => {
             WHERE sch.speaker_id = ?
             ORDER BY ts.day_number, ts.start_time
         `, [speaker.speaker_id]);
-        
         res.json({
             speaker: {
                 speaker_id: speaker.speaker_id,
@@ -414,7 +370,6 @@ app.post('/api/speaker/login', async (req, res) => {
             schedule: schedule,
             total_sessions: schedule.length
         });
-        
     } catch (error) {
         console.error('Speaker login error:', error);
         res.status(500).json({ error: 'Internal server error' });
@@ -436,14 +391,13 @@ app.post('/api/process-files', async (req, res) => {
 const uploadStorage = multer.diskStorage({
     destination: (req, file, cb) => {
         const uploadPath = path.join(__dirname, 'uploads');
-        fs.ensureDirSync(uploadPath); // make sure folder exists
+        fs.ensureDirSync(uploadPath);
         cb(null, uploadPath);
     },
     filename: (req, file, cb) => {
         cb(null, Date.now() + '-' + file.originalname);
     }
 });
-
 const upload = multer({ storage: uploadStorage });
 
 app.post('/api/upload/presentation', upload.single('presentation'), async (req, res) => {
@@ -451,10 +405,7 @@ app.post('/api/upload/presentation', upload.single('presentation'), async (req, 
         if (!req.file) {
             return res.status(400).json({ error: 'No file uploaded' });
         }
-
         const { speakerCode, hallName, dayNumber, sessionTitle } = req.body;
-
-        // Find speaker_id and speaker_code
         const [speakers] = await db.execute(
             'SELECT speaker_id, speaker_code FROM speakers WHERE speaker_code = ?',
             [speakerCode]
@@ -464,8 +415,6 @@ app.post('/api/upload/presentation', upload.single('presentation'), async (req, 
         }
         const speakerId = speakers[0].speaker_id;
         const speaker_code = speakers[0].speaker_code;
-
-        // Find schedule and all required info
         const [schedules] = await db.execute(
     `SELECT s.schedule_id, s.hall_id, h.hall_name, ts.day_number, ts.slot_order, c.total_days
      FROM schedules s
@@ -479,27 +428,19 @@ app.post('/api/upload/presentation', upload.single('presentation'), async (req, 
             return res.status(404).json({ error: 'Session not found for upload' });
         }
         const scheduleId = schedules[0].schedule_id;
-const hallId = schedules[0].hall_id;
-const slotOrder = schedules[0].slot_order;
-const totalDays = schedules[0].total_days;
-
-// Calculate slot_order_in_day (1-based index for the day)
-const slotOrderInDay = ((slotOrder - 1) % totalDays) + 1;
-
-// Build folder and custom filename
-const hallFolder = hallName.replace(/[^a-zA-Z0-9_]/g, '_');
-const dayFolder = `Day_${dayNumber}`;
-const originalExt = path.extname(req.file.originalname);
-const originalBase = path.basename(req.file.originalname, originalExt).replace(/[^a-zA-Z0-9_]/g, '_');
-const customFilename = `${slotOrderInDay}_${speaker_code}_${originalBase}${originalExt}`;
+        const hallId = schedules[0].hall_id;
+        const slotOrder = schedules[0].slot_order;
+        const totalDays = schedules[0].total_days;
+        const slotOrderInDay = ((slotOrder - 1) % totalDays) + 1;
+        const hallFolder = hallName.replace(/[^a-zA-Z0-9_]/g, '_');
+        const dayFolder = `Day_${dayNumber}`;
+        const originalExt = path.extname(req.file.originalname);
+        const originalBase = path.basename(req.file.originalname, originalExt).replace(/[^a-zA-Z0-9_]/g, '_');
+        const customFilename = `${slotOrderInDay}_${speaker_code}_${originalBase}${originalExt}`;
         const targetDir = path.join(__dirname, 'uploads', hallFolder, dayFolder);
         await fs.ensureDir(targetDir);
         const targetPath = path.join(targetDir, customFilename);
-
-        // Move file to target folder with custom name
         await fs.move(req.file.path, targetPath, { overwrite: true });
-
-        // Insert file record
         await db.execute(`
             INSERT INTO uploaded_files (
                 schedule_id,
@@ -529,7 +470,6 @@ const customFilename = `${slotOrderInDay}_${speaker_code}_${originalBase}${origi
             req.file.size,
             req.file.mimetype
         ]);
-
         res.json({ success: true, message: 'File uploaded successfully!' });
     } catch (err) {
         console.error('Upload error:', err);
@@ -541,8 +481,6 @@ const customFilename = `${slotOrderInDay}_${speaker_code}_${originalBase}${origi
 app.delete('/api/files/:fileId', async (req, res) => {
     try {
         const { fileId } = req.params;
-
-        // 1. Get file path from DB
         const [files] = await db.execute(
             'SELECT stored_path, stored_filename FROM uploaded_files WHERE file_id = ?',
             [fileId]
@@ -551,21 +489,15 @@ app.delete('/api/files/:fileId', async (req, res) => {
             return res.status(404).json({ error: 'File not found' });
         }
         const filePath = path.join(__dirname, files[0].stored_path, files[0].stored_filename);
-
-        // 2. Delete file from filesystem
         try {
             await fs.remove(filePath);
         } catch (err) {
-            // If file doesn't exist, ignore error
             console.warn('File not found on disk, skipping:', filePath);
         }
-
-        // 3. Delete from DB
         const [result] = await db.execute(
             'DELETE FROM uploaded_files WHERE file_id = ?',
             [fileId]
         );
-
         res.json({ success: true, message: 'File deleted successfully!' });
     } catch (err) {
         console.error('Delete error:', err);
@@ -577,7 +509,6 @@ app.delete('/api/files/:fileId', async (req, res) => {
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
-
 app.get('/admin', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'admin.html'));
 });
@@ -591,17 +522,60 @@ app.use((err, req, res, next) => {
 // Start server
 async function startServer() {
   await initDatabase();
-  
-  // Process any pending files on startup
   setTimeout(async () => {
     await processUploadedFiles();
   }, 2000);
-  
   app.listen(PORT, () => {
     console.log(`🚀 Server running on http://localhost:${PORT}`);
     console.log(`📊 Admin Panel: http://localhost:${PORT}/admin`);
     console.log(`🔄 File processing available at: POST /api/process-files`);
   });
 }
+
+// Get a single speaker by ID
+app.get('/api/speakers/:id', async (req, res) => {
+    try {
+        const [rows] = await db.execute(
+            'SELECT * FROM speakers WHERE speaker_id = ?',
+            [req.params.id]
+        );
+        if (rows.length === 0) {
+            return res.status(404).json({ error: 'Speaker not found' });
+        }
+        res.json(rows[0]);
+    } catch (err) {
+        res.status(500).json({ error: 'Failed to fetch speaker' });
+    }
+});
+
+// Delete speaker
+app.delete('/api/speakers/:id', async (req, res) => {
+    try {
+        const [result] = await db.execute('DELETE FROM speakers WHERE speaker_id = ?', [req.params.id]);
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: 'Speaker not found' });
+        }
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ error: 'Failed to delete speaker' });
+    }
+});
+
+// Update speaker
+app.put('/api/speakers/:id', async (req, res) => {
+    try {
+        const { full_name, email, phone, title, bio } = req.body;
+        const [result] = await db.execute(
+            `UPDATE speakers SET full_name=?, email=?, phone=?, title=?, bio=? WHERE speaker_id=?`,
+            [full_name, email, phone, title, bio, req.params.id]
+        );
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: 'Speaker not found' });
+        }
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ error: 'Failed to update speaker' });
+    }
+});
 
 startServer();

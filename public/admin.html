@@ -30,6 +30,28 @@
             <section id="speakers-section" class="admin-section active">
                 <div class="section-header">
                     <h2>👥 Speaker Management</h2>
+                    <button class="btn btn-primary" onclick="adminApp.showAddSpeakerForm()">➕ Add New Speaker</button>
+                </div>
+                <div class="speakers-grid" id="speakers-grid">
+                    <!-- Dynamic speaker cards will be inserted here -->
+                </div>
+            </section>
+
+            <!-- Schedule Management Section -->
+            <section id="schedule-section" class="admin-section">
+                <div class="section-header">
+                    <h2>📅 Schedule Management</h2>
+                    <button class="btn btn-primary" onclick="adminApp.showAddScheduleForm()">➕ Add New Session</button>
+                </div>
+                <div class="schedule-grid" id="schedule-grid">
+                    <!-- Dynamic schedule cards will be inserted here -->
+                </div>
+            </section>
+
+            <!-- Halls Management Section -->
+            <section id="halls-section" class="admin-section">
+                <div class="section-header">
+                    <h2>🏢 Hall Management</h2>
                     <button class="btn btn-primary" onclick="adminApp.showAddHallForm()">➕ Add New Hall</button>
                 </div>
                 <div class="halls-grid" id="halls-grid">
@@ -71,27 +93,22 @@
                     <label for="speaker-name">Full Name *</label>
                     <input type="text" id="speaker-name" name="full_name" required>
                 </div>
-
                 <div class="form-group">
                     <label for="speaker-email">Email *</label>
                     <input type="email" id="speaker-email" name="email" required>
                 </div>
-
                 <div class="form-group">
                     <label for="speaker-phone">Phone</label>
                     <input type="tel" id="speaker-phone" name="phone">
                 </div>
-
                 <div class="form-group">
                     <label for="speaker-title">Professional Title *</label>
                     <input type="text" id="speaker-title" name="title" required>
                 </div>
-
                 <div class="form-group">
                     <label for="speaker-bio">Biography</label>
                     <textarea id="speaker-bio" name="bio" rows="4"></textarea>
                 </div>
-
                 <div class="form-actions">
                     <button type="button" class="btn btn-secondary" onclick="adminApp.closeModal('add-speaker-modal')">Cancel</button>
                     <button type="submit" class="btn btn-primary">💾 Save Speaker</button>
@@ -112,34 +129,55 @@
                         <option value="">Select Speaker</option>
                     </select>
                 </div>
-
                 <div class="form-group">
                     <label for="schedule-hall">Hall *</label>
                     <select id="schedule-hall" name="hall_id" required>
                         <option value="">Select Hall</option>
                     </select>
                 </div>
-
                 <div class="form-group">
                     <label for="schedule-slot">Time Slot *</label>
                     <select id="schedule-slot" name="slot_id" required>
                         <option value="">Select Time Slot</option>
                     </select>
                 </div>
-
                 <div class="form-group">
                     <label for="session-title">Session Title</label>
                     <input type="text" id="session-title" name="session_title">
                 </div>
-
                 <div class="form-group">
                     <label for="session-description">Session Description</label>
                     <textarea id="session-description" name="session_description" rows="3"></textarea>
                 </div>
-
                 <div class="form-actions">
                     <button type="button" class="btn btn-secondary" onclick="adminApp.closeModal('add-schedule-modal')">Cancel</button>
                     <button type="submit" class="btn btn-primary">📅 Schedule Session</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Hall Modal -->
+    <div id="add-hall-modal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close" onclick="adminApp.closeModal('add-hall-modal')">&times;</span>
+            <h3>➕ Add New Hall</h3>
+            <form id="add-hall-form" onsubmit="adminApp.addHall(event)">
+                <div class="form-group">
+                    <label for="hall-name">Hall Name *</label>
+                    <input type="text" id="hall-name" name="hall_name" required>
+                </div>
+                <div class="form-group">
+                    <label for="hall-capacity">Capacity *</label>
+                    <input type="number" id="hall-capacity" name="capacity" required>
+                </div>
+                <div class="form-group">
+                    <label for="hall-location">Location</label>
+                    <input type="text" id="hall-location" name="location">
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="adminApp.closeModal('add-hall-modal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">💾 Save Hall</button>
                 </div>
             </form>
         </div>
@@ -153,7 +191,51 @@
             <p>&copy; 2025 Conference Admin Panel | Built for A1 Logistics Internship</p>
         </div>
     </footer>
+    
 
     <script src="admin.js"></script>
+    <!-- Speaker Details Modal -->
+    <div id="speaker-details-modal" class="modal hidden">
+    <div class="modal-content" style="min-width:350px;max-width:98vw;">
+        <span class="close" onclick="adminApp.closeModal('speaker-details-modal')">&times;</span>
+        <div id="speaker-details-content">
+            <!-- Speaker details will be loaded here -->
+        </div>
+    </div>
+    </div>
+    <!-- Edit Speaker Modal -->
+<div id="edit-speaker-modal" class="modal hidden">
+    <div class="modal-content">
+        <span class="close" onclick="adminApp.closeModal('edit-speaker-modal')">&times;</span>
+        <h3>Edit Speaker</h3>
+        <form id="edit-speaker-form" onsubmit="adminApp.updateSpeaker(event)">
+            <input type="hidden" id="edit-speaker-id" name="speaker_id">
+            <div class="form-group">
+                <label for="edit-speaker-name">Full Name *</label>
+                <input type="text" id="edit-speaker-name" name="full_name" required>
+            </div>
+            <div class="form-group">
+                <label for="edit-speaker-email">Email *</label>
+                <input type="email" id="edit-speaker-email" name="email" required>
+            </div>
+            <div class="form-group">
+                <label for="edit-speaker-phone">Phone</label>
+                <input type="tel" id="edit-speaker-phone" name="phone">
+            </div>
+            <div class="form-group">
+                <label for="edit-speaker-title">Professional Title *</label>
+                <input type="text" id="edit-speaker-title" name="title" required>
+            </div>
+            <div class="form-group">
+                <label for="edit-speaker-bio">Biography</label>
+                <textarea id="edit-speaker-bio" name="bio" rows="4"></textarea>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary" onclick="adminApp.closeModal('edit-speaker-modal')">Cancel</button>
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>
 </body>
 </html>

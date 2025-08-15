@@ -100,7 +100,11 @@ async function processUploadedFiles() {
         const targetFilePath = path.join(fullStoredPath, file.stored_filename);
         
         // Copy file from original location to target location
-        await fs.copy(file.original_path, targetFilePath);
+        if (file.original_path !== targetFilePath) {
+          await fs.copy(file.original_path, targetFilePath);
+        } else {
+          console.log('Source and destination are the same, skipping copy.');
+        }
         console.log(`✅ File copied to: ${targetFilePath}`);
 
         // Update database status to processed
@@ -450,33 +454,59 @@ app.post('/api/upload/presentation', upload.single('presentation'), async (req, 
 
         const { speakerCode, hallName, dayNumber, sessionTitle } = req.body;
 
-        // Find speaker_id
+        // Find speaker_id and speaker_code
         const [speakers] = await db.execute(
-            'SELECT speaker_id FROM speakers WHERE speaker_code = ?',
+            'SELECT speaker_id, speaker_code FROM speakers WHERE speaker_code = ?',
             [speakerCode]
         );
         if (speakers.length === 0) {
             return res.status(404).json({ error: 'Speaker not found' });
         }
         const speakerId = speakers[0].speaker_id;
+        const speaker_code = speakers[0].speaker_code;
 
-        // Find schedule_id for this session
+        // Find schedule and all required info
         const [schedules] = await db.execute(
-            `SELECT schedule_id FROM schedules 
-             JOIN halls ON schedules.hall_id = halls.hall_id
-             JOIN time_slots ON schedules.slot_id = time_slots.slot_id
-             WHERE schedules.speaker_id = ? AND halls.hall_name = ? AND time_slots.day_number = ? AND schedules.session_title = ?`,
-            [speakerId, hallName, dayNumber, sessionTitle]
-        );
+    `SELECT s.schedule_id, s.hall_id, h.hall_name, ts.day_number, ts.slot_order, c.total_days
+     FROM schedules s
+     JOIN halls h ON s.hall_id = h.hall_id
+     JOIN time_slots ts ON s.slot_id = ts.slot_id
+     JOIN conferences c ON s.conference_id = c.conference_id
+     WHERE s.speaker_id = ? AND h.hall_name = ? AND ts.day_number = ? AND s.session_title = ?`,
+    [speakerId, hallName, dayNumber, sessionTitle]
+);
         if (schedules.length === 0) {
             return res.status(404).json({ error: 'Session not found for upload' });
         }
         const scheduleId = schedules[0].schedule_id;
+const hallId = schedules[0].hall_id;
+const slotOrder = schedules[0].slot_order;
+const totalDays = schedules[0].total_days;
+
+// Calculate slot_order_in_day (1-based index for the day)
+const slotOrderInDay = ((slotOrder - 1) % totalDays) + 1;
+
+// Build folder and custom filename
+const hallFolder = hallName.replace(/[^a-zA-Z0-9_]/g, '_');
+const dayFolder = `Day_${dayNumber}`;
+const originalExt = path.extname(req.file.originalname);
+const originalBase = path.basename(req.file.originalname, originalExt).replace(/[^a-zA-Z0-9_]/g, '_');
+const customFilename = `${slotOrderInDay}_${speaker_code}_${originalBase}${originalExt}`;
+        const targetDir = path.join(__dirname, 'uploads', hallFolder, dayFolder);
+        await fs.ensureDir(targetDir);
+        const targetPath = path.join(targetDir, customFilename);
+
+        // Move file to target folder with custom name
+        await fs.move(req.file.path, targetPath, { overwrite: true });
 
         // Insert file record
         await db.execute(`
             INSERT INTO uploaded_files (
                 schedule_id,
+                hall_id,
+                day_number,
+                speaker_code,
+                slot_order_in_day,
                 original_name,
                 original_path,
                 stored_filename,
@@ -485,13 +515,17 @@ app.post('/api/upload/presentation', upload.single('presentation'), async (req, 
                 file_type,
                 upload_status,
                 upload_date
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, 'pending', NOW())
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', NOW())
         `, [
             scheduleId,
+            hallId,
+            dayNumber,
+            speaker_code,
+            slotOrderInDay,
             req.file.originalname,
-            req.file.path,
-            req.file.filename,
-            path.dirname(req.file.path),
+            targetPath,
+            customFilename,
+            path.join('uploads', hallFolder, dayFolder),
             req.file.size,
             req.file.mimetype
         ]);
@@ -508,15 +542,29 @@ app.delete('/api/files/:fileId', async (req, res) => {
     try {
         const { fileId } = req.params;
 
-        // Delete from DB
+        // 1. Get file path from DB
+        const [files] = await db.execute(
+            'SELECT stored_path, stored_filename FROM uploaded_files WHERE file_id = ?',
+            [fileId]
+        );
+        if (files.length === 0) {
+            return res.status(404).json({ error: 'File not found' });
+        }
+        const filePath = path.join(__dirname, files[0].stored_path, files[0].stored_filename);
+
+        // 2. Delete file from filesystem
+        try {
+            await fs.remove(filePath);
+        } catch (err) {
+            // If file doesn't exist, ignore error
+            console.warn('File not found on disk, skipping:', filePath);
+        }
+
+        // 3. Delete from DB
         const [result] = await db.execute(
             'DELETE FROM uploaded_files WHERE file_id = ?',
             [fileId]
         );
-
-        if (result.affectedRows === 0) {
-            return res.status(404).json({ error: 'File not found' });
-        }
 
         res.json({ success: true, message: 'File deleted successfully!' });
     } catch (err) {

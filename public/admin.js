@@ -178,7 +178,7 @@ const adminApp = {
                     <div class="schedule-meta">Hall: ${session.hall_name || ''}</div>
                     <div class="schedule-meta">Day: ${session.day_number}, ${session.slot_name || ''}</div>
                     <div class="schedule-actions">
-                        <button class="btn btn-secondary" onclick="adminApp.editSchedule(${session.schedule_id})">Edit</button>
+                       
                         <button class="btn btn-warning" onclick="adminApp.deleteSchedule(${session.schedule_id})">Delete</button>
                     </div>
                 </div>
@@ -189,74 +189,208 @@ const adminApp = {
     },
 
     showAddScheduleForm() {
-        document.getElementById('add-schedule-modal').classList.remove('hidden');
-        this.populateScheduleForm();
-    },
+    document.getElementById('add-schedule-modal').classList.remove('hidden');
+    adminApp.populateScheduleForm();
+},
 
-    async populateScheduleForm() {
-        const speakerSel = document.getElementById('schedule-speaker');
-        const hallSel = document.getElementById('schedule-hall');
-        const slotSel = document.getElementById('schedule-slot');
-        speakerSel.innerHTML = '<option value="">Select Speaker</option>';
-        hallSel.innerHTML = '<option value="">Select Hall</option>';
+async populateScheduleForm() {
+    // Fetch all data
+    const [speakersRes, hallsRes, slotsRes, schedulesRes] = await Promise.all([
+        fetch('/api/speakers'),
+        fetch('/api/halls'),
+        fetch('/api/timeslots'),
+        fetch('/api/schedule')
+    ]);
+    const speakers = await speakersRes.json();
+    const halls = await hallsRes.json();
+    const slots = await slotsRes.json();
+    const schedules = await schedulesRes.json();
+
+    // Speakers
+    const speakerSel = document.getElementById('schedule-speaker');
+    speakerSel.innerHTML = '<option value="">Select Speaker</option>';
+    speakers.forEach(s => {
+        speakerSel.innerHTML += `<option value="${s.speaker_id}" data-title="${s.title || ''}">${s.full_name}</option>`;
+    });
+
+    // Halls: Only show halls with at least one available slot
+    const hallSel = document.getElementById('schedule-hall');
+    hallSel.innerHTML = '<option value="">Select Hall</option>';
+    halls.forEach(hall => {
+        const hallHasFreeSlot = slots.some(slot =>
+            !schedules.some(sch => sch.hall_id == hall.hall_id && sch.slot_id == slot.slot_id)
+        );
+        if (hallHasFreeSlot) {
+            hallSel.innerHTML += `<option value="${hall.hall_id}">${hall.hall_name}</option>`;
+        }
+    });
+
+    // Slots: Only show slots available for the selected hall
+    const slotSel = document.getElementById('schedule-slot');
+    slotSel.innerHTML = '<option value="">Select Time Slot</option>';
+
+    hallSel.onchange = function() {
+        const hallId = hallSel.value;
         slotSel.innerHTML = '<option value="">Select Time Slot</option>';
+        if (!hallId) return;
+        slots.forEach(slot => {
+            const isTaken = schedules.some(sch => sch.hall_id == hallId && sch.slot_id == slot.slot_id);
+            if (!isTaken) {
+                slotSel.innerHTML += `<option value="${slot.slot_id}">Day ${slot.day_number} - ${slot.slot_name} (${slot.start_time} - ${slot.end_time})</option>`;
+            }
+        });
+    };
 
-        try {
-            const [speakersRes, hallsRes, slotsRes] = await Promise.all([
-                fetch('/api/speakers'),
-                fetch('/api/halls'),
-                fetch('/api/timeslots')
-            ]);
-            const speakers = await speakersRes.json();
-            const halls = await hallsRes.json();
-            const slots = await slotsRes.json();
+    // Session title auto-fill
+    speakerSel.onchange = function() {
+        const selected = speakerSel.options[speakerSel.selectedIndex];
+        document.getElementById('session-title').value = selected.getAttribute('data-title') || '';
+    };
+},
 
-            speakers.forEach(s => {
-                speakerSel.innerHTML += `<option value="${s.speaker_id}">${s.full_name}</option>`;
-            });
-            halls.forEach(h => {
-                hallSel.innerHTML += `<option value="${h.hall_id}">${h.hall_name}</option>`;
-            });
-            slots.forEach(ts => {
-                slotSel.innerHTML += `<option value="${ts.slot_id}">Day ${ts.day_number} - ${ts.slot_name} (${ts.start_time} - ${ts.end_time})</option>`;
-            });
-        } catch {}
-    },
+editSchedule: async function(scheduleId) {
+    try {
+        const [speakersRes, hallsRes, slotsRes, schedulesRes] = await Promise.all([
+            fetch('/api/speakers'),
+            fetch('/api/halls'),
+            fetch('/api/timeslots'),
+            fetch('/api/schedule')
+        ]);
+        const speakers = await speakersRes.json();
+        const halls = await hallsRes.json();
+        const slots = await slotsRes.json();
+        const schedules = await schedulesRes.json();
 
-    async addSchedule(e) {
-        e.preventDefault();
-        const form = e.target;
-        const data = Object.fromEntries(new FormData(form));
-        try {
-            const res = await fetch('/api/schedule', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            });
-            if (!res.ok) throw new Error();
-            this.closeModal('add-schedule-modal');
-            this.loadSchedule();
-            this.showToast('Session scheduled!', 'success');
-        } catch {
-            this.showToast('Error scheduling session.', 'error');
+        const schedule = schedules.find(s => s.schedule_id == scheduleId);
+        if (!schedule) throw new Error();
+
+        // --- Speaker dropdown: show all speakers, just like add modal ---
+        const speakerSel = document.getElementById('edit-speaker-id');
+        speakerSel.innerHTML = '<option value="">Select Speaker</option>';
+        speakers.forEach(s => {
+            speakerSel.innerHTML += `<option value="${s.speaker_id}" data-title="${s.title || ''}">${s.full_name}</option>`;
+        });
+        // speakerSel.value = schedule.speaker_id ? String(schedule.speaker_id) : '';
+
+        // --- Halls ---
+        const hallSel = document.getElementById('edit-hall-id');
+        hallSel.innerHTML = '<option value="">Select Hall</option>';
+        halls.forEach(hall => {
+            hallSel.innerHTML += `<option value="${hall.hall_id}">${hall.hall_name}</option>`;
+        });
+        hallSel.value = schedule.hall_id ? String(schedule.hall_id) : '';
+
+        // --- Slots ---
+        const slotSel = document.getElementById('edit-slot-id');
+        slotSel.innerHTML = '<option value="">Select Time Slot</option>';
+        slots.forEach(slot => {
+            slotSel.innerHTML += `<option value="${slot.slot_id}">Day ${slot.day_number} - ${slot.slot_name} (${slot.start_time} - ${slot.end_time})</option>`;
+        });
+        slotSel.value = schedule.slot_id ? String(schedule.slot_id) : '';
+
+        // Session title auto-fill
+        const selectedSpeaker = speakers.find(s => s.speaker_id == schedule.speaker_id);
+        document.getElementById('edit-session-title').value = selectedSpeaker ? (selectedSpeaker.title || '') : '';
+
+        // Set hidden fields
+        document.getElementById('edit-schedule-id').value = schedule.schedule_id;
+        document.getElementById('edit-conference-id').value = schedule.conference_id;
+
+        // Session title auto-update on speaker change
+        speakerSel.onchange = function() {
+            const selected = speakerSel.options[speakerSel.selectedIndex];
+            document.getElementById('edit-session-title').value = selected.getAttribute('data-title') || '';
+        };
+
+        document.getElementById('edit-schedule-modal').classList.remove('hidden');
+    } catch (err) {
+        this.showToast('Error loading schedule for edit.', 'error');
+    }
+},
+
+addSchedule: async function(e) {
+    e.preventDefault();
+    const form = e.target;
+    const data = Object.fromEntries(new FormData(form));
+    // You may want to set conference_id here if needed
+    data.conference_id = 1; // or your actual conference_id logic
+    try {
+        const res = await fetch('/api/schedule', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+        if (!res.ok) throw new Error();
+        this.closeModal('add-schedule-modal');
+        this.loadSchedule();
+        this.showToast('Session scheduled!', 'success');
+    } catch {
+        this.showToast('Error scheduling session.', 'error');
+    }
+},
+
+// Helper for updating halls in edit modal
+updateAvailableHallsEdit(slots, halls, schedules, editingScheduleId) {
+    const hallSel = document.getElementById('edit-hall-id');
+    hallSel.innerHTML = '<option value="">Select Hall</option>';
+    halls.forEach(hall => {
+        const hallHasFreeSlot = slots.some(slot =>
+            !schedules.some(sch => sch.hall_id == hall.hall_id && sch.slot_id == slot.slot_id && sch.schedule_id != editingScheduleId)
+        );
+        if (hallHasFreeSlot) {
+            hallSel.innerHTML += `<option value="${hall.hall_id}">${hall.hall_name}</option>`;
         }
-    },
+    });
+},
 
-    editSchedule(scheduleId) {
-        this.showToast('Edit schedule not implemented.', 'error');
-    },
-
+// Helper for updating slots in edit modal
+updateAvailableSlotsEdit(slots, schedules, editingScheduleId) {
+    const hallId = document.getElementById('edit-hall-id').value;
+    const slotSel = document.getElementById('edit-slot-id');
+    slotSel.innerHTML = '<option value="">Select Time Slot</option>';
+    if (!hallId) return;
+    slots.forEach(slot => {
+        const isTaken = schedules.some(sch =>
+            sch.hall_id == hallId && sch.slot_id == slot.slot_id && sch.schedule_id != editingScheduleId
+        );
+        if (!isTaken) {
+            slotSel.innerHTML += `<option value="${slot.slot_id}">Day ${slot.day_number} - ${slot.slot_name} (${slot.start_time} - ${slot.end_time})</option>`;
+        }
+    });
+},
+updateSchedule: async function(e) {
+    e.preventDefault();
+    const form = e.target;
+    const data = Object.fromEntries(new FormData(form));
+    const scheduleId = data.schedule_id;
+    try {
+        const res = await fetch(`/api/schedule/${scheduleId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+        if (!res.ok) {
+            const errMsg = await res.text();
+            throw new Error(errMsg);
+        }
+        this.closeModal('edit-schedule-modal');
+        this.loadSchedule();
+        this.showToast('Schedule updated!', 'success');
+    } catch (err) {
+        this.showToast('Error updating schedule.', 'error');
+    }
+},
     async deleteSchedule(scheduleId) {
-        if (!confirm('Delete this session?')) return;
-        try {
-            const res = await fetch(`/api/schedule/${scheduleId}`, { method: 'DELETE' });
-            if (!res.ok) throw new Error();
-            this.loadSchedule();
-            this.showToast('Session deleted!', 'success');
-        } catch {
-            this.showToast('Error deleting session.', 'error');
-        }
-    },
+    if (!confirm('Delete this session?')) return;
+    try {
+        const res = await fetch(`/api/schedule/${scheduleId}`, { method: 'DELETE' });
+        if (!res.ok) throw new Error();
+        this.loadSchedule();
+        this.showToast('Session deleted!', 'success');
+    } catch {
+        this.showToast('Error deleting session.', 'error');
+    }
+},
 
     // --- Halls ---
     async loadHalls() {

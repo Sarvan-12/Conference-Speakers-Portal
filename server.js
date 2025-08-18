@@ -191,6 +191,52 @@ app.get('/api/schedule', async (req, res) => {
   }
 });
 
+// Add new schedule
+app.post('/api/schedule', async (req, res) => {
+    try {
+        const { conference_id, speaker_id, hall_id, slot_id, session_title } = req.body;
+        await db.execute(
+            `INSERT INTO schedules (conference_id, speaker_id, hall_id, slot_id, session_title)
+             VALUES (?, ?, ?, ?, ?)`,
+            [conference_id, speaker_id, hall_id, slot_id, session_title]
+        );
+        res.json({ success: true });
+    } catch (err) {
+        if (err.code === 'ER_DUP_ENTRY') {
+            res.status(400).json({ error: 'This hall and time slot are already booked.' });
+        } else {
+            res.status(500).json({ error: 'Failed to add schedule' });
+        }
+    }
+});
+
+// Update schedule
+app.put('/api/schedule/:id', async (req, res) => {
+    try {
+        const { conference_id, speaker_id, hall_id, slot_id, session_title, session_description, status } = req.body;
+        const [result] = await db.execute(
+            `UPDATE schedules SET conference_id=?, speaker_id=?, hall_id=?, slot_id=?, session_title=?, session_description=?, status=?
+             WHERE schedule_id=?`,
+            [conference_id, speaker_id, hall_id, slot_id, session_title, session_description, status || 'confirmed', req.params.id]
+        );
+        if (result.affectedRows === 0) return res.status(404).json({ error: 'Schedule not found' });
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ error: 'Failed to update schedule' });
+    }
+});
+
+// Delete schedule
+app.delete('/api/schedule/:id', async (req, res) => {
+    try {
+        const [result] = await db.execute('DELETE FROM schedules WHERE schedule_id = ?', [req.params.id]);
+        if (result.affectedRows === 0) return res.status(404).json({ error: 'Schedule not found' });
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ error: 'Failed to delete schedule' });
+    }
+});
+
 // Get schedule by hall
 app.get('/api/schedule/hall/:hallId', async (req, res) => {
   try {

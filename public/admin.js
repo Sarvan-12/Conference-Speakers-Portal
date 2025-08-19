@@ -405,7 +405,6 @@ updateSchedule: async function(e) {
                     <div class="hall-meta">Capacity: ${hall.capacity}</div>
                     <div class="hall-meta">Location: ${hall.location || ''}</div>
                     <div class="hall-actions">
-                        <button class="btn btn-secondary" onclick="adminApp.editHall(${hall.hall_id})">Edit</button>
                         <button class="btn btn-warning" onclick="adminApp.deleteHall(${hall.hall_id})">Delete</button>
                     </div>
                 </div>
@@ -438,21 +437,54 @@ updateSchedule: async function(e) {
         }
     },
 
-    editHall(hallId) {
-        this.showToast('Edit hall not implemented.', 'error');
-    },
 
-    async deleteHall(hallId) {
-        if (!confirm('Delete this hall?')) return;
-        try {
-            const res = await fetch(`/api/halls/${hallId}`, { method: 'DELETE' });
-            if (!res.ok) throw new Error();
-            this.loadHalls();
-            this.showToast('Hall deleted!', 'success');
-        } catch {
-            this.showToast('Error deleting hall.', 'error');
-        }
-    },
+editHall: async function(hallId) {
+    console.log('Editing hall:', hallId);
+    try {
+        const res = await fetch(`/api/halls/${hallId}`);
+        if (!res.ok) throw new Error();
+        const hall = await res.json();
+        document.getElementById('edit-hall-id').value = hall.hall_id;
+        document.getElementById('edit-hall-name').value = hall.hall_name;
+        document.getElementById('edit-hall-capacity').value = hall.capacity;
+        document.getElementById('edit-hall-location').value = hall.location || '';
+        document.getElementById('edit-hall-modal').classList.remove('hidden');
+    } catch {
+        this.showToast('Error loading hall for edit.', 'error');
+    }
+},
+
+updateHall: async function(e) {
+    e.preventDefault();
+    const form = e.target;
+    const data = Object.fromEntries(new FormData(form));
+    const hallId = data.hall_id;
+    try {
+        const res = await fetch(`/api/halls/${hallId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+        if (!res.ok) throw new Error();
+        this.closeModal('edit-hall-modal');
+        this.loadHalls();exportSchedule
+        this.showToast('Hall updated!', 'success');
+    } catch {
+        this.showToast('Error updating hall.', 'error');
+    }
+},
+
+async deleteHall(hallId) {
+    if (!confirm('Delete this hall?')) return;
+    try {
+        const res = await fetch(`/api/halls/${hallId}`, { method: 'DELETE' });
+        if (!res.ok) throw new Error();
+        this.loadHalls();
+        this.showToast('Hall deleted!', 'success');
+    } catch {
+        this.showToast('Error deleting hall.', 'error');
+    }
+},
 
     // --- Settings ---
     async loadStats() {
@@ -477,7 +509,23 @@ updateSchedule: async function(e) {
     },
 
     exportSchedule() {
-        this.showToast('Export not implemented.', 'error');
+        fetch('/api/export/schedule')
+        .then(res => {
+            if (!res.ok) throw new Error();
+            return res.blob();
+        })
+        .then(blob => {
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'conference_schedule.csv';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+            this.showToast('Schedule exported!', 'success');
+        })
+        .catch(() => this.showToast('Export failed.', 'error'));
     },
 
     viewPublicSite() {
@@ -485,7 +533,17 @@ updateSchedule: async function(e) {
     },
 
     resetData() {
-        this.showToast('Reset not implemented.', 'error');
+        if (!confirm('Are you sure you want to reset ALL data? This cannot be undone!')) return;
+    fetch('/api/reset', { method: 'POST' })
+        .then(res => {
+            if (!res.ok) throw new Error();
+            this.loadSpeakers();
+            this.loadSchedule();
+            this.loadHalls();
+            this.loadStats();
+            this.showToast('All data reset!', 'success');
+        })
+        .catch(() => this.showToast('Reset failed.', 'error'));
     },
 
     // --- Toasts ---

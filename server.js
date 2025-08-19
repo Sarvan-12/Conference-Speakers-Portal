@@ -24,6 +24,7 @@ const dbConfig = {
     connectionLimit: 10,
     queueLimit: 0
 };
+const { Parser } = require('json2csv'); 
 
 let db;
 
@@ -502,7 +503,7 @@ app.post('/api/upload/presentation', upload.single('presentation'), async (req, 
                 file_type,
                 upload_status,
                 upload_date
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', NOW())
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'processed', NOW())
         `, [
             scheduleId,
             hallId,
@@ -621,6 +622,102 @@ app.put('/api/speakers/:id', async (req, res) => {
         res.json({ success: true });
     } catch (err) {
         res.status(500).json({ error: 'Failed to update speaker' });
+    }
+});
+
+// Get a single hall by ID
+app.get('/api/halls/:id', async (req, res) => {
+    try {
+        const [rows] = await db.execute(
+            'SELECT * FROM halls WHERE hall_id = ?',
+            [req.params.id]
+        );
+        if (rows.length === 0) {
+            return res.status(404).json({ error: 'Hall not found' });
+        }
+        res.json(rows[0]);
+    } catch (err) {
+        res.status(500).json({ error: 'Failed to fetch hall' });
+    }
+});
+
+// Add new hall
+app.post('/api/halls', async (req, res) => {
+    try {
+        const { hall_name, capacity, location } = req.body;
+        const conferenceId = req.body.conference_id || process.env.DEFAULT_CONFERENCE_ID || 1;
+        await db.execute(
+            `INSERT INTO halls (hall_name, capacity, location, conference_id)
+             VALUES (?, ?, ?, ?)`,
+            [hall_name, capacity, location, conferenceId]
+        );
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ error: 'Failed to add hall' });
+    }
+});
+
+// Update hall
+app.put('/api/halls/:id', async (req, res) => {
+    try {
+        const { hall_name, capacity, location } = req.body;
+        const [result] = await db.execute(
+            `UPDATE halls SET hall_name=?, capacity=?, location=? WHERE hall_id=?`,
+            [hall_name, capacity, location, req.params.id]
+        );
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: 'Hall not found' });
+        }
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ error: 'Failed to update hall' });
+    }
+});
+
+// Delete hall
+app.delete('/api/halls/:id', async (req, res) => {
+    try {
+        const [result] = await db.execute('DELETE FROM halls WHERE hall_id = ?', [req.params.id]);
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: 'Hall not found' });
+        }
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ error: 'Failed to delete hall' });
+    }
+});
+
+
+app.get('/api/export/schedule', async (req, res) => {
+    try {
+        const [rows] = await db.execute(`
+            SELECT s.schedule_id, s.session_title, sp.full_name AS speaker, h.hall_name, ts.day_number, ts.slot_name, ts.start_time, ts.end_time
+            FROM schedules s
+            JOIN speakers sp ON s.speaker_id = sp.speaker_id
+            JOIN halls h ON s.hall_id = h.hall_id
+            JOIN time_slots ts ON s.slot_id = ts.slot_id
+            ORDER BY ts.day_number, ts.start_time, h.hall_name
+        `);
+        const parser = new Parser();
+        const csv = parser.parse(rows);
+        res.header('Content-Type', 'text/csv');
+        res.attachment('conference_schedule.csv');
+        res.send(csv);
+    } catch (err) {
+        res.status(500).json({ error: 'Failed to export schedule' });
+    }
+});
+
+app.post('/api/reset', async (req, res) => {
+    try {
+        // Order matters due to foreign key constraints
+        await db.execute('DELETE FROM uploaded_files');
+        await db.execute('DELETE FROM schedules');
+        await db.execute('DELETE FROM speakers');
+        await db.execute('DELETE FROM halls');
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ error: 'Failed to reset data' });
     }
 });
 

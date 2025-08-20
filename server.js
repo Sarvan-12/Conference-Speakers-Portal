@@ -721,4 +721,14 @@ app.post('/api/reset', async (req, res) => {
     }
 });
 
+app.post('/api/admin/login', async (req, res) => {
+    const { username, password } = req.body;
+    // Replace this with your real admin check (DB or env)
+    if (username === 'admin' && password === 'admin123') {
+        res.json({ success: true });
+    } else {
+        res.status(401).json({ success: false, error: 'Invalid credentials' });
+    }
+});
+
 startServer();

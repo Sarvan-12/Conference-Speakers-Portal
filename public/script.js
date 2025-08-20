@@ -230,20 +230,20 @@ class ConferenceSchedule {
     document.getElementById('unique-speakers').textContent = this.speakersData.length;
 }
     renderSpeakersDirectory() {
-    const speakersList = document.getElementById('speakers-list');
+   const speakersList = document.getElementById('speakers-list');
     if (!speakersList) return;
     if (!this.speakersData || this.speakersData.length === 0) {
         speakersList.innerHTML = '<p>No speakers found.</p>';
         return;
     }
     speakersList.innerHTML = this.speakersData.map(speaker => `
-        <div class="speaker-card" onclick="app.showSpeakerModal(${speaker.speaker_id})">
-            <h4>${speaker.full_name}</h4>
-            <div class="speaker-meta">
-                <span>👤 ${speaker.speaker_code}</span>
-                <span>${speaker.title || ''}</span>
-                <span>${speaker.email}</span>
+        <div class="speaker-card-dir" onclick="app.showSpeakerModal(${speaker.speaker_id})">
+            <div class="speaker-card-header">
+                <div class="speaker-name">${speaker.full_name}</div>
+                <span class="speaker-code">${speaker.speaker_code || ''}</span>
             </div>
+            <div class="speaker-title">${speaker.title || ''}</div>
+            <div class="speaker-meta">${speaker.email || ''}</div>
         </div>
     `).join('');
 }

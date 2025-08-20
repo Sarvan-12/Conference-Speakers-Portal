@@ -16,21 +16,21 @@ body {
 .container {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 0 20px;
+    padding: 0 16px;
 }
 
 /* =================== HEADER =================== */
-.header {
+.header, .main-header {
     background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(15px);
-    padding: 25px 0;
-    margin-bottom: 30px;
+    padding: 20px 0;
+    margin-bottom: 24px;
     box-shadow: 0 4px 25px rgba(0, 0, 0, 0.1);
     border-bottom: 3px solid #4299e1;
 }
 
 .logo {
-    font-size: 2.8rem;
+    font-size: 2.2rem;
     font-weight: 800;
     text-align: center;
     color: #2d3748;
@@ -41,66 +41,88 @@ body {
 .subtitle {
     text-align: center;
     color: #4a5568;
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     font-weight: 500;
+}
+
+.header-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 16px 12px;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.login-options {
+    display: flex;
+    gap: 10px;
+}
+
+.login-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 1rem;
+    box-shadow: 0 2px 8px rgba(26,35,126,0.08);
+    transition: background 0.2s;
+}
+
+.speaker-login-btn {
+    background: #fff;
+    color: #1a237e;
+}
+
+.admin-login-btn {
+    background: #3949ab;
+    color: #fff;
+}
+
+.login-btn:hover {
+    opacity: 0.92;
 }
 
 /* =================== MAIN CONTENT =================== */
 .main {
-    padding-bottom: 100px;
+    padding-bottom: 60px;
 }
 
-/* =================== HALL NAVIGATION =================== */
 .hall-nav {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 20px;
-    margin-bottom: 35px;
-    padding: 0 10px;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin-bottom: 28px;
+    padding: 0 6px;
 }
 
 .hall-btn {
     background: rgba(255, 255, 255, 0.95);
-    border: 3px solid transparent;
-    padding: 20px 25px;
-    border-radius: 15px;
+    border: 2px solid transparent;
+    padding: 16px 12px;
+    border-radius: 12px;
     cursor: pointer;
     font-weight: 700;
-    font-size: 1.1rem;
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    font-size: 1rem;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
     text-align: center;
     position: relative;
     overflow: hidden;
-}
-
-.hall-btn::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-    transition: left 0.5s;
-}
-
-.hall-btn:hover::before {
-    left: 100%;
-}
-
-.hall-btn:hover {
-    transform: translateY(-5px) scale(1.02);
-    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.2);
-    background: white;
 }
 
 .hall-btn.active {
     background: linear-gradient(135deg, #4299e1, #3182ce);
     color: white;
     border-color: #2b6cb0;
-    transform: translateY(-3px) scale(1.05);
-    box-shadow: 0 15px 40px rgba(66, 153, 225, 0.4);
+    transform: scale(1.03);
+    box-shadow: 0 8px 24px rgba(66, 153, 225, 0.18);
 }
 
 .capacity {
@@ -114,32 +136,31 @@ body {
 /* =================== SCHEDULE CONTAINER =================== */
 .schedule-container {
     background: rgba(255, 255, 255, 0.98);
-    border-radius: 20px;
-    padding: 35px;
-    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15);
-    backdrop-filter: blur(15px);
+    border-radius: 16px;
+    padding: 24px 18px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.10);
     border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .current-hall h2 {
-    font-size: 2.5rem;
+    font-size: 2rem;
     color: #2d3748;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
     font-weight: 800;
 }
 
 .current-hall p {
     color: #4a5568;
-    font-size: 1.1rem;
-    margin-bottom: 30px;
+    font-size: 1rem;
+    margin-bottom: 20px;
 }
 
 /* =================== DAY TABS =================== */
 .day-tabs {
     display: flex;
-    gap: 15px;
-    margin-bottom: 30px;
-    border-bottom: 3px solid #e2e8f0;
+    gap: 10px;
+    margin-bottom: 18px;
+    border-bottom: 2px solid #e2e8f0;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
 }
@@ -147,68 +168,41 @@ body {
 .day-tab {
     background: none;
     border: none;
-    padding: 15px 25px;
+    padding: 10px 16px;
     cursor: pointer;
     font-weight: 600;
-    font-size: 1.1rem;
+    font-size: 1rem;
     color: #4a5568;
-    border-bottom: 4px solid transparent;
-    transition: all 0.3s ease;
+    border-bottom: 3px solid transparent;
+    transition: all 0.2s;
     white-space: nowrap;
     border-radius: 8px 8px 0 0;
-}
-
-.day-tab:hover {
-    color: #2b6cb0;
-    background: rgba(66, 153, 225, 0.1);
 }
 
 .day-tab.active {
     color: #2b6cb0;
     border-bottom-color: #4299e1;
-    background: rgba(66, 153, 225, 0.15);
+    background: rgba(66, 153, 225, 0.10);
     font-weight: 700;
 }
 
 /* =================== SCHEDULE GRID =================== */
 .schedule-grid {
     display: grid;
-    gap: 20px;
+    gap: 14px;
 }
 
 .time-slot {
     display: grid;
-    grid-template-columns: 200px 1fr;
-    gap: 25px;
-    padding: 25px;
+    grid-template-columns: 160px 1fr;
+    gap: 14px;
+    padding: 16px;
     background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-    border-radius: 15px;
-    border-left: 6px solid #4299e1;
-    transition: all 0.4s ease;
+    border-radius: 12px;
+    border-left: 5px solid #4299e1;
+    transition: all 0.3s;
     position: relative;
     overflow: hidden;
-}
-
-.time-slot::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 4px;
-    height: 100%;
-    background: linear-gradient(to bottom, #4299e1, #3182ce);
-    transform: scaleY(0);
-    transition: transform 0.3s ease;
-}
-
-.time-slot:hover {
-    transform: translateX(8px);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-    background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
-}
-
-.time-slot:hover::before {
-    transform: scaleY(1);
 }
 
 .time-info {
@@ -217,26 +211,26 @@ body {
     align-items: center;
     text-align: center;
     background: white;
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    border: 2px solid #e2e8f0;
+    padding: 12px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border: 1px solid #e2e8f0;
 }
 
 .time-range {
-    font-size: 1.3rem;
+    font-size: 1.1rem;
     font-weight: 800;
     color: #2d3748;
-    margin-bottom: 8px;
+    margin-bottom: 4px;
 }
 
 .slot-name {
-    font-size: 0.95rem;
+    font-size: 0.93rem;
     color: #4a5568;
     font-weight: 500;
-    background: rgba(66, 153, 225, 0.1);
-    padding: 4px 12px;
-    border-radius: 20px;
+    background: rgba(66, 153, 225, 0.08);
+    padding: 3px 10px;
+    border-radius: 16px;
 }
 
 .speaker-info {
@@ -246,76 +240,63 @@ body {
 }
 
 .speaker-name {
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     font-weight: 700;
     color: #2d3748;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
     cursor: pointer;
-    transition: all 0.3s ease;
-    position: relative;
+    transition: color 0.2s;
 }
 
 .speaker-name:hover {
     color: #3182ce;
-    transform: translateX(5px);
-}
-
-.speaker-name::after {
-    content: '👁️';
-    margin-left: 10px;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
-
-.speaker-name:hover::after {
-    opacity: 1;
 }
 
 .speaker-title {
     color: #4a5568;
-    font-size: 1.1rem;
-    margin-bottom: 15px;
+    font-size: 1rem;
+    margin-bottom: 10px;
     font-weight: 500;
 }
 
 .session-title {
     color: #2b6cb0;
-    font-size: 1rem;
+    font-size: 0.98rem;
     font-weight: 600;
-    margin-bottom: 10px;
+    margin-bottom: 6px;
     font-style: italic;
 }
 
 .speaker-meta {
     display: flex;
-    gap: 20px;
-    font-size: 0.95rem;
+    gap: 10px;
+    font-size: 0.93rem;
     color: #718096;
     flex-wrap: wrap;
 }
 
 .speaker-meta span {
-    background: rgba(113, 128, 150, 0.1);
-    padding: 4px 10px;
-    border-radius: 15px;
+    background: rgba(113, 128, 150, 0.08);
+    padding: 3px 8px;
+    border-radius: 12px;
     font-weight: 500;
 }
 
 /* =================== LOADING & ERROR STATES =================== */
 .loading {
     text-align: center;
-    padding: 80px 20px;
+    padding: 60px 10px;
     color: white;
 }
 
 .spinner {
-    width: 50px;
-    height: 50px;
-    border: 5px solid rgba(255, 255, 255, 0.3);
-    border-top: 5px solid white;
+    width: 38px;
+    height: 38px;
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    border-top: 4px solid white;
     border-radius: 50%;
     animation: spin 1.2s linear infinite;
-    margin: 0 auto 25px;
+    margin: 0 auto 18px;
 }
 
 @keyframes spin {
@@ -325,37 +306,37 @@ body {
 
 .error {
     text-align: center;
-    padding: 60px;
+    padding: 40px 10px;
     background: rgba(255, 255, 255, 0.95);
-    border-radius: 15px;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
 }
 
 .error-content h3 {
     color: #e53e3e;
-    margin-bottom: 15px;
-    font-size: 1.5rem;
+    margin-bottom: 10px;
+    font-size: 1.2rem;
 }
 
 .error-content p {
     color: #4a5568;
-    margin-bottom: 20px;
+    margin-bottom: 12px;
 }
 
 .retry-btn {
     background: #4299e1;
     color: white;
     border: none;
-    padding: 12px 25px;
-    border-radius: 8px;
+    padding: 10px 18px;
+    border-radius: 7px;
     cursor: pointer;
     font-weight: 600;
-    transition: all 0.3s ease;
+    transition: background 0.2s;
 }
 
 .retry-btn:hover {
     background: #3182ce;
-    transform: translateY(-2px);
+    transform: translateY(-1px);
 }
 
 .hidden {
@@ -379,20 +360,20 @@ body {
 
 .modal-content {
     background: white;
-    padding: 40px;
-    border-radius: 20px;
-    max-width: 600px;
-    width: 90%;
+    padding: 24px 12px;
+    border-radius: 14px;
+    max-width: 500px;
+    width: 96vw;
     max-height: 85vh;
     overflow-y: auto;
     position: relative;
-    box-shadow: 0 25px 80px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.18);
     animation: modalSlideIn 0.3s ease-out;
 }
 
 @keyframes modalSlideIn {
     from {
-        transform: translateY(-50px);
+        transform: translateY(-30px);
         opacity: 0;
     }
     to {
@@ -403,15 +384,15 @@ body {
 
 .close {
     position: absolute;
-    top: 20px;
-    right: 25px;
-    font-size: 2.5rem;
+    top: 12px;
+    right: 16px;
+    font-size: 2rem;
     cursor: pointer;
     color: #718096;
-    transition: all 0.3s ease;
+    transition: color 0.2s;
     background: #f7fafc;
-    width: 40px;
-    height: 40px;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -428,13 +409,13 @@ body {
 .speaker-header {
     display: flex;
     align-items: center;
-    gap: 15px;
-    margin-bottom: 15px;
+    gap: 10px;
+    margin-bottom: 10px;
     flex-wrap: wrap;
 }
 
 .speaker-details h3 {
-    font-size: 2rem;
+    font-size: 1.3rem;
     color: #2d3748;
     font-weight: 700;
 }
@@ -442,8 +423,8 @@ body {
 .speaker-code {
     background: linear-gradient(135deg, #4299e1, #3182ce);
     color: white;
-    padding: 8px 15px;
-    border-radius: 20px;
+    padding: 6px 12px;
+    border-radius: 16px;
     font-size: 0.9rem;
     font-weight: 700;
     font-family: monospace;
@@ -451,53 +432,53 @@ body {
 
 .speaker-position {
     color: #4a5568;
-    font-size: 1.2rem;
-    margin-bottom: 25px;
+    font-size: 1rem;
+    margin-bottom: 12px;
     font-weight: 500;
 }
 
 .speaker-bio, .speaker-contact, .speaker-sessions {
-    margin-bottom: 25px;
-    padding-bottom: 20px;
+    margin-bottom: 14px;
+    padding-bottom: 10px;
     border-bottom: 1px solid #e2e8f0;
 }
 
 .speaker-bio h4, .speaker-contact h4, .speaker-sessions h4 {
     color: #2d3748;
-    margin-bottom: 12px;
-    font-size: 1.3rem;
+    margin-bottom: 8px;
+    font-size: 1.05rem;
     font-weight: 600;
 }
 
 .speaker-bio p {
     color: #4a5568;
-    line-height: 1.8;
-    font-size: 1rem;
+    line-height: 1.7;
+    font-size: 0.97rem;
 }
 
 .speaker-contact p {
-    margin-bottom: 10px;
+    margin-bottom: 7px;
     font-family: 'Courier New', monospace;
-    font-size: 1rem;
+    font-size: 0.97rem;
     color: #2d3748;
 }
 
 .speaker-sessions-list {
     display: grid;
-    gap: 10px;
+    gap: 7px;
 }
 
 .session-item {
     background: #f7fafc;
-    padding: 15px;
-    border-radius: 8px;
-    border-left: 4px solid #4299e1;
+    padding: 10px;
+    border-radius: 7px;
+    border-left: 3px solid #4299e1;
 }
 
 .session-item strong {
     color: #2d3748;
     display: block;
-    margin-bottom: 5px;
+    margin-bottom: 3px;
 }
 
 .session-item span {
@@ -508,27 +489,27 @@ body {
 /* =================== STATS BAR =================== */
 .stats-bar {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 20px;
-    margin-top: 30px;
-    padding-top: 25px;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 12px;
+    margin-top: 18px;
+    padding-top: 12px;
     border-top: 2px solid #e2e8f0;
 }
 
 .stat {
     text-align: center;
     background: linear-gradient(135deg, #f7fafc, #edf2f7);
-    padding: 20px;
-    border-radius: 12px;
+    padding: 12px;
+    border-radius: 10px;
     border: 1px solid #e2e8f0;
 }
 
 .stat-number {
     display: block;
-    font-size: 2rem;
+    font-size: 1.2rem;
     font-weight: 800;
     color: #2b6cb0;
-    margin-bottom: 5px;
+    margin-bottom: 2px;
 }
 
 .stat-label {
@@ -542,22 +523,22 @@ body {
 /* =================== EMPTY STATE =================== */
 .empty-state {
     text-align: center;
-    padding: 80px 20px;
+    padding: 40px 10px;
     color: #4a5568;
     background: linear-gradient(135deg, #f7fafc, #edf2f7);
-    border-radius: 15px;
+    border-radius: 10px;
     border: 2px dashed #cbd5e0;
 }
 
 .empty-state h3 {
-    font-size: 1.8rem;
-    margin-bottom: 15px;
+    font-size: 1.2rem;
+    margin-bottom: 10px;
     color: #2d3748;
 }
 
 .empty-state p {
-    font-size: 1.1rem;
-    margin-bottom: 20px;
+    font-size: 1rem;
+    margin-bottom: 10px;
 }
 
 /* =================== FOOTER =================== */
@@ -566,217 +547,197 @@ body {
     bottom: 0;
     left: 0;
     width: 100%;
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(15px);
-    padding: 20px 0;
+    background: rgba(255, 255, 255, 0.97);
+    backdrop-filter: blur(10px);
+    padding: 10px 0 6px 0;
     text-align: center;
     color: #4a5568;
-    box-shadow: 0 -4px 25px rgba(0, 0, 0, 0.1);
-    border-top: 2px solid #e2e8f0;
+    box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.07);
+    border-top: 1.5px solid #e2e8f0;
+    font-size: 0.98rem;
+    z-index: 100;
 }
 
 /* =================== RESPONSIVE DESIGN =================== */
-@media (max-width: 768px) {
-    .hall-nav {
-        grid-template-columns: 1fr 1fr;
-        gap: 15px;
+@media (max-width: 900px) {
+    .container {
+        padding: 0 6px;
     }
-    
-    .hall-btn {
-        padding: 15px 20px;
-        font-size: 1rem;
-    }
-    
-    .logo {
-        font-size: 2.2rem;
-    }
-    
-    .subtitle {
-        font-size: 1rem;
-    }
-    
-    .time-slot {
-        grid-template-columns: 1fr;
-        gap: 15px;
-    }
-    
-    .time-info {
-        order: -1;
-    }
-    
-    .day-tabs {
-        gap: 10px;
-    }
-    
-    .day-tab {
-        padding: 12px 18px;
-        font-size: 1rem;
-    }
-    
-    .schedule-container {
-        padding: 25px;
-        margin-bottom: 100px;
-    }
-    
-    .modal-content {
-        padding: 30px;
-        margin: 20px;
-    }
-    
-    .speaker-header {
+    .header-content {
         flex-direction: column;
-        align-items: flex-start;
         gap: 10px;
+        padding: 14px 4px;
     }
-    
+    .main-header {
+        padding: 14px 0;
+    }
+}
+
+@media (max-width: 700px) {
+    .main {
+        padding-bottom: 80px;
+    }
+    .container {
+        padding: 0 2px;
+    }
+    .header-content {
+        flex-direction: column;
+        gap: 8px;
+        padding: 10px 2px;
+    }
+    .main-header {
+        padding: 10px 0;
+    }
+    .hall-nav {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+    .schedule-container {
+        padding: 10px 4px;
+    }
     .stats-bar {
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+    .footer {
+        font-size: 0.93rem;
+        padding: 7px 0 4px 0;
+    }
+    .modal-content {
+        padding: 12px 4px;
     }
 }
 
 @media (max-width: 480px) {
-    .container {
-        padding: 0 15px;
+    .main-header {
+        padding: 7px 0;
     }
-    
-    .hall-nav {
+    .footer {
+        font-size: 0.89rem;
+        padding: 5px 0 2px 0;
+    }
+}
+
+/* =================== SPEAKERS DIRECTORY =================== */
+/* --- Modern Speakers Directory Grid --- */
+.speakers-directory {
+    background: rgba(255,255,255,0.98);
+    border-radius: 18px;
+    box-shadow: 0 4px 24px rgba(44,62,80,0.10);
+    padding: 32px 24px 28px 24px;
+    margin: 36px auto 28px auto;
+    max-width: 1200px;
+    width: 98%;
+}
+
+.speakers-directory h2 {
+    font-size: 2rem;
+    color: #1a237e;
+    margin-bottom: 24px;
+    font-weight: 800;
+    text-align: center;
+    letter-spacing: 1px;
+}
+
+.speakers-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 28px;
+}
+
+.speaker-card-dir {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 2px 16px rgba(66,153,225,0.10);
+    padding: 1.3rem 1.1rem 1.1rem 1.1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    align-items: flex-start;
+    border: 1.5px solid #e3e9f7;
+    position: relative;
+    transition: box-shadow 0.18s, transform 0.18s;
+}
+
+.speaker-card-dir:hover {
+    box-shadow: 0 8px 32px rgba(66,153,225,0.18);
+    transform: translateY(-2px) scale(1.025);
+    border-color: #3949ab;
+}
+
+.speaker-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    margin-bottom: 2px;
+}
+
+.speaker-name {
+    font-size: 1.18rem;
+    font-weight: 700;
+    color: #1a237e;
+    letter-spacing: 0.2px;
+}
+
+.speaker-code {
+    background: #3949ab;
+    color: #fff;
+    font-size: 0.89rem;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-family: monospace;
+    font-weight: 600;
+    opacity: 0.85;
+    margin-left: 8px;
+}
+
+.speaker-title {
+    color: #3949ab;
+    font-size: 1.01rem;
+    font-weight: 500;
+}
+
+.speaker-meta {
+    color: #607d8b;
+    font-size: 0.97rem;
+    font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+.speaker-bio {
+    color: #444;
+    font-size: 0.97rem;
+    margin-top: 6px;
+    line-height: 1.5;
+    max-height: 3.7em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-style: italic;
+    width: 100%;
+    word-break: break-word;
+    opacity: 0.95;
+}
+
+@media (max-width: 900px) {
+    .speakers-directory {
+        padding: 18px 6px 14px 6px;
+        margin: 18px 0 12px 0;
+    }
+    .speakers-grid {
+        gap: 14px;
+    }
+}
+
+@media (max-width: 700px) {
+    .speakers-directory h2 {
+        font-size: 1.3rem;
+        margin-bottom: 12px;
+    }
+    .speakers-grid {
         grid-template-columns: 1fr;
         gap: 10px;
     }
-    
-    .hall-btn {
-        padding: 12px 15px;
-        font-size: 0.95rem;
-    }
-    
-    .capacity {
-        font-size: 0.8rem;
-    }
-    
-    .schedule-container {
-        padding: 20px;
-    }
-    
-    .current-hall h2 {
-        font-size: 2rem;
-    }
-    
-    .stats-bar {
-        grid-template-columns: 1fr;
-    }
-}
-
-/* =================== ANIMATIONS =================== */
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-.time-slot {
-    animation: fadeIn 0.5s ease-out;
-}
-
-.time-slot:nth-child(1) { animation-delay: 0.1s; }
-.time-slot:nth-child(2) { animation-delay: 0.2s; }
-.time-slot:nth-child(3) { animation-delay: 0.3s; }
-.time-slot:nth-child(4) { animation-delay: 0.4s; }
-
-.speakers-directory {
-    margin: 2rem 0;
-    padding: 1rem;
-    background: #f9f9f9;
-    border-radius: 8px;
-}
-#speakers-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-}
-.speaker-card {
-    background: #fff;
-    border: 1px solid #e2e8f0;
-    border-radius: 6px;
-    padding: 1rem;
-    width: 220px;
-    cursor: pointer;
-    transition: box-shadow 0.2s;
-}
-.speaker-card:hover {
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-}
-.speaker-meta span {
-    display: block;
-    font-size: 0.95em;
-    color: #555;
-}
-
-/* ADD THESE STYLES TO YOUR EXISTING style.css */
-
-/* Login Options Styling */
-.header-content {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 20px;
-}
-
-.login-options {
-    display: flex;
-    gap: 15px;
-}
-
-.login-btn {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 12px 20px;
-    border: none;
-    border-radius: 25px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    color: white;
-    text-decoration: none;
-    font-size: 14px;
-    backdrop-filter: blur(10px);
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-}
-
-.speaker-login-btn {
-    background: linear-gradient(135deg, #4299e1, #3182ce);
-}
-
-.admin-login-btn {
-    background: linear-gradient(135deg, #38a169, #2f855a);
-}
-
-.login-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0,0,0,0.3);
-}
-
-.login-icon {
-    font-size: 16px;
-}
-
-/* Mobile Responsive */
-@media (max-width: 768px) {
-    .header-content {
-        flex-direction: column;
-        gap: 20px;
-        text-align: center;
-    }
-    
-    .login-options {
-        flex-direction: column;
-        width: 100%;
-    }
-    
-    .login-btn {
-        justify-content: center;
-        width: 100%;
+    .speaker-card-dir {
+        padding: 0.9rem 0.7rem 0.8rem 0.7rem;
     }
 }

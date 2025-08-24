@@ -19,6 +19,7 @@
             <button class="nav-btn active" data-section="speakers">👥 Speakers</button>
             <button class="nav-btn" data-section="schedule">📅 Schedule</button>
             <button class="nav-btn" data-section="halls">🏢 Halls</button>
+            <button class="nav-btn" data-section="files">📂 Uploaded Files</button>
             <button class="nav-btn" data-section="settings">⚙ Settings</button>
         </div>
     </nav>
@@ -59,6 +60,15 @@
                 </div>
             </section>
 
+            <section id="files-section" class="admin-section">
+    <div class="section-header">
+        <h2>📂 Uploaded Files</h2>
+    </div>
+    <div class="files-grid" id="files-grid">
+        <!-- Files table will be loaded here by JS -->
+    </div>
+</section>
+
             <!-- Settings Section -->
             <section id="settings-section" class="admin-section">
                 <div class="section-header">
@@ -79,7 +89,6 @@
                     </div>
                 </div>
             </section>
-
         </div>
     </main>
 
@@ -284,6 +293,26 @@
         </form>
     </div>
 </div>
+
+    <!-- Admin Upload Modal
+<div id="admin-upload-modal" class="modal hidden">
+    <div class="modal-content">
+        <span class="close" onclick="adminApp.closeModal('admin-upload-modal')">&times;</span>
+        <h3>Upload/Replace Presentation</h3>
+        <form id="admin-upload-form">
+            <input type="hidden" id="upload-schedule-id" name="schedule_id">
+            <div class="form-group">
+                <label for="admin-upload-file">Select PPT File (.ppt, .pptx)</label>
+                <input type="file" id="admin-upload-file" name="presentation" accept=".ppt,.pptx" required>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary" onclick="adminApp.closeModal('admin-upload-modal')">Cancel</button>
+                <button type="submit" class="btn btn-primary">Upload</button>
+            </div>
+        </form>
+    </div>
+</div> -->
+
 </div>
 </body>
 </html>

@@ -71,6 +71,7 @@ body {
 
 .admin-section.active {
     display: block;
+    margin-bottom: 36px;
 }
 
 .section-header {
@@ -78,11 +79,17 @@ body {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 18px;
+    border-bottom: 1px solid #e0e7ef;
+    padding-bottom: 8px;
+    margin-bottom: 22px;
 }
 
 .section-header h2 {
     margin: 0;
     font-size: 1.4rem;
+    color: #3949ab;
+    font-size: 1.25rem;
+    letter-spacing: 0.5px;
 }
 
 .btn {
@@ -93,6 +100,8 @@ body {
     cursor: pointer;
     margin-left: 8px;
     transition: background 0.2s;
+    margin-right: 8px;
+    margin-bottom: 4px;
 }
 
 .btn-primary {
@@ -187,7 +196,9 @@ body {
     min-width: 340px;
     max-width: 98vw;
     position: relative;
-    box-shadow: 0 4px 24px rgba(44,62,80,0.13);
+    box-shadow: 0 8px 32px rgba(44,62,80,0.18);
+    max-width: 480px;
+
 }
 
 .modal-content .close {
@@ -266,4 +277,102 @@ body {
     padding: 18px 0 10px 0;
     font-size: 1rem;
     margin-top: 40px;
+}
+
+/* Uploaded Files Table Styles */
+.files-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 18px;
+    background: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(44,62,80,0.07);
+}
+.files-table th, .files-table td {
+    padding: 10px 8px;
+    border-bottom: 1px solid #e0e7ef;
+    text-align: left;
+    font-size: 0.98rem;
+}
+.files-table th {
+    background: #f0f4fa;
+    font-weight: 600;
+    color: #1976d2;
+}
+.files-table tr:last-child td {
+    border-bottom: none;
+}
+.files-table a.btn {
+    padding: 4px 12px;
+    font-size: 0.97rem;
+    border-radius: 4px;
+    text-decoration: none;
+    background: #e0e0e0;
+    color: #222;
+    transition: background 0.2s;
+    margin-left: 0;
+}
+.files-table a.btn:hover {
+    background: #bdbdbd;
+}
+
+.btn-danger {
+    background: #e53935;
+    color: #fff;
+    border: none;
+    padding: 4px 12px;
+    border-radius: 4px;
+    margin-left: 6px;
+    cursor: pointer;
+    font-size: 0.97rem;
+    transition: background 0.2s;
+}
+.btn-danger:hover {
+    background: #b71c1c;
+}
+
+.btn-primary {
+    background: #3949ab;
+    color: #fff;
+    border: none;
+    padding: 4px 12px;
+    border-radius: 4px;
+    margin-left: 6px;
+    cursor: pointer;
+    font-size: 0.97rem;
+    transition: background 0.2s;
+}
+.btn-primary:hover {
+    background: #1a237e;
+}
+.files-grid {
+    overflow-x: auto;
+}
+.files-table {
+    min-width: 900px;
+}
+
+.files-table tbody tr:hover {
+    background: #f5faff;
+}
+
+.admin-main .container {
+    background: #f9fbfd;
+    border-radius: 12px;
+    box-shadow: 0 2px 16px rgba(44,62,80,0.06);
+    padding: 28px 24px;
+}
+
+.files-table td:last-child {
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
+.files-table .btn,
+.files-table button.btn {
+    display: inline-block;
+    margin-right: 6px;
+    margin-bottom: 0;
+    vertical-align: middle;
 }

@@ -11,14 +11,21 @@ const adminApp = {
 
     // Navigation
     bindNav() {
-        document.querySelectorAll('.nav-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                this.showSection(btn.dataset.section);
-            });
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            // Remove active from all sections and nav buttons
+            document.querySelectorAll('.admin-section').forEach(sec => sec.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            // Add active to clicked nav and corresponding section
+            this.classList.add('active');
+            document.getElementById(this.dataset.section + '-section').classList.add('active');
+            // Load files if files-section is shown
+            if (this.dataset.section === 'files') {
+                loadUploadedFiles();
+            }
         });
-    },
+    });
+},
 
     showSection(section) {
         this.currentSection = section;
@@ -557,6 +564,71 @@ async deleteHall(hallId) {
     }
 };
 
+async function loadUploadedFiles() {
+    const filesGrid = document.getElementById('files-grid');
+    filesGrid.innerHTML = '<p>Loading files...</p>';
+    try {
+        const res = await fetch('/api/admin/files');
+        const files = await res.json();
+        if (!files.length) {
+            filesGrid.innerHTML = '<p>No files uploaded yet.</p>';
+            return;
+        }
+        filesGrid.innerHTML = `
+            <table class="files-table">
+                <thead>
+                    <tr>
+                        <th>Speaker</th>
+                        <th>Session</th>
+                        <th>Hall</th>
+                        <th>Day</th>
+                        <th>Filename</th>
+                        <th>Size</th>
+                        <th>Uploaded</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${files.map(file => `
+                        <tr>
+                            <td>${file.speaker_name}</td>
+                            <td>${file.session_title}</td>
+                            <td>${file.hall_name}</td>
+                            <td>${file.day_number}</td>
+                            <td>${file.original_name}</td>
+                            <td>${(file.file_size / (1024 * 1024)).toFixed(1)} MB</td>
+                            <td>${new Date(file.upload_date).toLocaleString()}</td>
+                            <td>
+                                <a href="/${file.stored_path.replace(/\\/g, '/')}/${file.stored_filename}" target="_blank" class="btn btn-secondary">👁️ View</a>
+                                <button class="btn btn-danger" onclick="deleteAdminFile(${file.file_id})">🗑️ Delete</button>
+
+                            </td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+        `;
+    } catch (err) {
+        filesGrid.innerHTML = '<p>Error loading files.</p>';
+    }
+}
+
+// Add this function to admin.js
+async function deleteAdminFile(fileId) {
+    if (!confirm('Are you sure you want to delete this file?')) return;
+    try {
+        const res = await fetch(`/api/files/${fileId}`, { method: 'DELETE' });
+        if (res.ok) {
+            alert('File deleted successfully!');
+            loadUploadedFiles();
+        } else {
+            const error = await res.json();
+            alert('Delete failed: ' + (error.error || 'Unknown error'));
+        }
+    } catch (err) {
+        alert('Delete failed: ' + err.message);
+    }
+}
 
 
 document.addEventListener('DOMContentLoaded', () => adminApp.init());

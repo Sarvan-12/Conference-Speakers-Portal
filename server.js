@@ -733,4 +733,32 @@ app.post('/api/admin/login', async (req, res) => {
     }
 });
 
+
+app.get('/api/admin/files', async (req, res) => {
+    try {
+        const [files] = await db.execute(`
+            SELECT 
+                uf.file_id,
+                uf.original_name,
+                uf.stored_filename,
+                uf.stored_path,
+                uf.file_size,
+                uf.upload_date,
+                s.session_title,
+                h.hall_name,
+                ts.day_number,
+                sp.full_name AS speaker_name
+            FROM uploaded_files uf
+            JOIN schedules s ON uf.schedule_id = s.schedule_id
+            JOIN halls h ON s.hall_id = h.hall_id
+            JOIN time_slots ts ON s.slot_id = ts.slot_id
+            JOIN speakers sp ON s.speaker_id = sp.speaker_id
+            ORDER BY uf.upload_date DESC
+        `);
+        res.json(files);
+    } catch (err) {
+        console.error('Admin file fetch error:', err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
 startServer();

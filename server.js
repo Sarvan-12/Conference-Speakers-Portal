@@ -13,6 +13,7 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 app.use(express.static('public'));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Database configuration
 const dbConfig = {
@@ -335,6 +336,7 @@ app.get('/api/speaker/files/:code', async (req, res) => {
                 uf.file_id,
                 uf.original_name,
                 uf.stored_filename,
+                uf.stored_path,           -- Make sure this column exists in your DB!
                 uf.file_size,
                 uf.upload_status,
                 uf.upload_date,

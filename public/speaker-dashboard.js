@@ -136,14 +136,19 @@ class SpeakerDashboard {
                         </div>
                         
                         ${hasFile ? `
-                            <div class="file-info-display">
-                                <div class="file-name">${uploadedFile.stored_filename}</div>
-                                <div class="file-meta">
-                                    <span>Size: ${this.formatFileSize(uploadedFile.file_size)}</span>
-                                    <span>Uploaded: ${this.formatDate(uploadedFile.upload_date)}</span>
-                                </div>
-                            </div>
-                        ` : ''}
+    <div class="file-info-display">
+        <div class="file-name">
+            ${uploadedFile.stored_filename}
+            <a href="/${uploadedFile.stored_path.replace(/\\/g, '/')}/${uploadedFile.stored_filename}" target="_blank" class="btn btn-secondary" style="margin-left:10px;">
+    👁️ View
+</a>
+        </div>
+        <div class="file-meta">
+            <span>Size: ${this.formatFileSize(uploadedFile.file_size)}</span>
+            <span>Uploaded: ${this.formatDate(uploadedFile.upload_date)}</span>
+        </div>
+    </div>
+` : ''}
                         
                         <div class="file-actions">
     ${hasFile ? `

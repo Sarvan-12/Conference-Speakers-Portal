@@ -240,7 +240,7 @@ class ConferenceSchedule {
         <div class="speaker-card-dir" onclick="app.showSpeakerModal(${speaker.speaker_id})">
             <div class="speaker-card-header">
                 <div class="speaker-name">${speaker.full_name}</div>
-                <span class="speaker-code">${speaker.speaker_code || ''}</span>
+
             </div>
             <div class="speaker-title">${speaker.title || ''}</div>
             <div class="speaker-meta">${speaker.email || ''}</div>

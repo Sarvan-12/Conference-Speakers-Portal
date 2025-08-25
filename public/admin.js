@@ -574,43 +574,66 @@ async function loadUploadedFiles() {
             filesGrid.innerHTML = '<p>No files uploaded yet.</p>';
             return;
         }
-        filesGrid.innerHTML = `
-            <table class="files-table">
-                <thead>
-                    <tr>
-                        <th>Speaker</th>
-                        <th>Session</th>
-                        <th>Hall</th>
-                        <th>Day</th>
-                        <th>Filename</th>
-                        <th>Size</th>
-                        <th>Uploaded</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${files.map(file => `
+        // Use mobile cards if screen is small, else use table
+        if (window.innerWidth <= 600) {
+            renderFilesMobile(files);
+        } else {
+            filesGrid.innerHTML = `
+                <table class="files-table">
+                    <thead>
                         <tr>
-                            <td>${file.speaker_name}</td>
-                            <td>${file.session_title}</td>
-                            <td>${file.hall_name}</td>
-                            <td>${file.day_number}</td>
-                            <td>${file.original_name}</td>
-                            <td>${(file.file_size / (1024 * 1024)).toFixed(1)} MB</td>
-                            <td>${new Date(file.upload_date).toLocaleString()}</td>
-                            <td>
-                                <a href="/${file.stored_path.replace(/\\/g, '/')}/${file.stored_filename}" target="_blank" class="btn btn-secondary">👁️ View</a>
-                                <button class="btn btn-danger" onclick="deleteAdminFile(${file.file_id})">🗑️ Delete</button>
-
-                            </td>
+                            <th>Speaker</th>
+                            <th>Session</th>
+                            <th>Hall</th>
+                            <th>Day</th>
+                            <th>Filename</th>
+                            <th>Size</th>
+                            <th>Uploaded</th>
+                            <th>Action</th>
                         </tr>
-                    `).join('')}
-                </tbody>
-            </table>
-        `;
+                    </thead>
+                    <tbody>
+                        ${files.map(file => `
+                            <tr>
+                                <td>${file.speaker_name}</td>
+                                <td>${file.session_title}</td>
+                                <td>${file.hall_name}</td>
+                                <td>${file.day_number}</td>
+                                <td>${file.original_name}</td>
+                                <td>${(file.file_size / (1024 * 1024)).toFixed(1)} MB</td>
+                                <td>${new Date(file.upload_date).toLocaleString()}</td>
+                                <td>
+                                    <a href="/${file.stored_path.replace(/\\/g, '/')}/${file.stored_filename}" target="_blank" class="btn btn-secondary">👁️ View</a>
+                                    <button class="btn btn-danger" onclick="deleteAdminFile(${file.file_id})">🗑️ Delete</button>
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+        }
     } catch (err) {
         filesGrid.innerHTML = '<p>Error loading files.</p>';
     }
+}
+
+function renderFilesMobile(files) {
+    const filesGrid = document.getElementById('files-grid');
+    filesGrid.innerHTML = files.map(file => `
+        <div class="file-card">
+            <div class="file-card-row"><strong>Speaker:</strong> ${file.speaker_name}</div>
+            <div class="file-card-row"><strong>Session:</strong> ${file.session_title}</div>
+            <div class="file-card-row"><strong>Hall:</strong> ${file.hall_name}</div>
+            <div class="file-card-row"><strong>Day:</strong> ${file.day_number}</div>
+            <div class="file-card-row"><strong>Filename:</strong> ${file.original_name}</div>
+            <div class="file-card-row"><strong>Size:</strong> ${(file.file_size / (1024 * 1024)).toFixed(1)} MB</div>
+            <div class="file-card-row"><strong>Uploaded:</strong> ${new Date(file.upload_date).toLocaleString()}</div>
+            <div class="file-card-actions">
+                <a href="/${file.stored_path.replace(/\\/g, '/')}/${file.stored_filename}" target="_blank" class="btn btn-secondary">👁️ View</a>
+                <button class="btn btn-danger" onclick="deleteAdminFile(${file.file_id})">🗑️ Delete</button>
+            </div>
+        </div>
+    `).join('');
 }
 
 // Add this function to admin.js

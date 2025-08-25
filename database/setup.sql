@@ -101,24 +101,24 @@ INSERT INTO halls (conference_id, hall_name, capacity, location) VALUES
 
 -- Insert sample speakers
 INSERT INTO speakers (speaker_code, full_name, email, phone, title, bio) VALUES
-('SP001', 'Dr. John Smith', 'john.smith@email.com', '+91-9876543210', 'AI & Machine Learning Expert', 'Leading AI researcher with 15+ years experience in deep learning and neural networks.'),
-('SP002', 'Mary Johnson', 'mary.johnson@email.com', '+91-9876543211', 'Cloud Architecture Specialist', 'Senior cloud architect helping enterprises migrate to modern cloud infrastructure.'),
-('SP003', 'Robert Brown', 'robert.brown@email.com', '+91-9876543212', 'Cybersecurity Consultant', 'Former government cybersecurity analyst now consulting for Fortune 500 companies.'),
-('SP004', 'Sarah Davis', 'sarah.davis@email.com', '+91-9876543213', 'Digital Transformation Leader', 'Driving digital innovation and transformation strategies across multiple industries.'),
-('SP005', 'David Wilson', 'david.wilson@email.com', '+91-9876543214', 'DevOps & Automation Expert', 'Specializes in CI/CD pipelines and infrastructure automation.'),
-('SP006', 'Lisa Chen', 'lisa.chen@email.com', '+91-9876543215', 'UX Design Director', 'Award-winning designer creating intuitive user experiences for global products.'),
-('SP007', 'Mike Garcia', 'mike.garcia@email.com', '+91-9876543216', 'Blockchain Developer', 'Building decentralized applications and smart contract solutions.'),
-('SP008', 'Anna Martinez', 'anna.martinez@email.com', '+91-9876543217', 'Data Science Manager', 'Leading data science teams in extracting business insights from big data.');
+('SP001', 'Dr. John Smith', 'john.smith@email.com', '+91 9876543210', 'AI & Machine Learning Expert', 'Leading AI researcher with 15+ years experience in deep learning and neural networks.'),
+('SP002', 'Mary Johnson', 'mary.johnson@email.com', '+91 9876543211', 'Cloud Architecture Specialist', 'Senior cloud architect helping enterprises migrate to modern cloud infrastructure.'),
+('SP003', 'Robert Brown', 'robert.brown@email.com', '+91 9876543212', 'Cybersecurity Consultant', 'Former government cybersecurity analyst now consulting for Fortune 500 companies.'),
+('SP004', 'Sarah Davis', 'sarah.davis@email.com', '+91 9876543213', 'Digital Transformation Leader', 'Driving digital innovation and transformation strategies across multiple industries.'),
+('SP005', 'David Wilson', 'david.wilson@email.com', '+91 9876543214', 'DevOps & Automation Expert', 'Specializes in CI/CD pipelines and infrastructure automation.'),
+('SP006', 'Lisa Chen', 'lisa.chen@email.com', '+91 9876543215', 'UX Design Director', 'Award-winning designer creating intuitive user experiences for global products.'),
+('SP007', 'Mike Garcia', 'mike.garcia@email.com', '+91 9876543216', 'Blockchain Developer', 'Building decentralized applications and smart contract solutions.'),
+('SP008', 'Anna Martinez', 'anna.martinez@email.com', '+91 9876543217', 'Data Science Manager', 'Leading data science teams in extracting business insights from big data.');
 
 INSERT INTO speakers (speaker_code, full_name, email, phone, title, bio) VALUES
-('SP009', 'Priya Sharma', 'priya.sharma@email.com', '+91-9876543218', 'IoT Solutions Architect', 'Expert in smart devices and IoT ecosystems.'),
-('SP010', 'Rahul Mehra', 'rahul.mehra@email.com', '+91-9876543219', 'Mobile App Developer', 'Building scalable mobile apps for startups and enterprises.'),
-('SP011', 'Emily Clark', 'emily.clark@email.com', '+91-9876543220', 'AI Ethics Researcher', 'Researching ethical implications of artificial intelligence.'),
-('SP012', 'Carlos Rivera', 'carlos.rivera@email.com', '+91-9876543221', 'Cloud Security Analyst', 'Specialist in securing cloud infrastructure.'),
-('SP013', 'Sofia Rossi', 'sofia.rossi@email.com', '+91-9876543222', 'Agile Coach', 'Helping teams adopt agile methodologies.'),
-('SP014', 'Tom Lee', 'tom.lee@email.com', '+91-9876543223', 'Full Stack Developer', 'Experienced in MERN and LAMP stacks.'),
-('SP015', 'Yuki Tanaka', 'yuki.tanaka@email.com', '+91-9876543224', 'Robotics Engineer', 'Designing and building autonomous robots.'),
-('SP016', 'Fatima Al-Farsi', 'fatima.alfarsi@email.com', '+91-9876543225', 'Big Data Analyst', 'Turning massive datasets into actionable insights.');
+('SP009', 'Priya Sharma', 'priya.sharma@email.com', '+91 9876543218', 'IoT Solutions Architect', 'Expert in smart devices and IoT ecosystems.'),
+('SP010', 'Rahul Mehra', 'rahul.mehra@email.com', '+91 9876543219', 'Mobile App Developer', 'Building scalable mobile apps for startups and enterprises.'),
+('SP011', 'Emily Clark', 'emily.clark@email.com', '+91 9876543220', 'AI Ethics Researcher', 'Researching ethical implications of artificial intelligence.'),
+('SP012', 'Carlos Rivera', 'carlos.rivera@email.com', '+91 9876543221', 'Cloud Security Analyst', 'Specialist in securing cloud infrastructure.'),
+('SP013', 'Sofia Rossi', 'sofia.rossi@email.com', '+91 9876543222', 'Agile Coach', 'Helping teams adopt agile methodologies.'),
+('SP014', 'Tom Lee', 'tom.lee@email.com', '+91 9876543223', 'Full Stack Developer', 'Experienced in MERN and LAMP stacks.'),
+('SP015', 'Yuki Tanaka', 'yuki.tanaka@email.com', '+91 9876543224', 'Robotics Engineer', 'Designing and building autonomous robots.'),
+('SP016', 'Fatima Al-Farsi', 'fatima.alfarsi@email.com', '+91 9876543225', 'Big Data Analyst', 'Turning massive datasets into actionable insights.');
 
 -- Insert time slots for 4 days
 INSERT INTO time_slots (conference_id, day_number, start_time, end_time, slot_name, slot_order) VALUES

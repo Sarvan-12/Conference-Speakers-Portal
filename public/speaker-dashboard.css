@@ -621,3 +621,151 @@ body {
         padding: 20px;
     }
 }
+
+.file-actions {
+    display: flex;
+    gap: 14px;
+    margin: 12px 0 0 0;
+    justify-content: flex-start;
+}
+
+.file-actions .btn {
+    padding: 8px 20px;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(66,153,225,0.07);
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.file-actions .btn-secondary {
+    background: #edf2f7;
+    color: #3182ce;
+    border: 1px solid #cbd5e0;
+}
+.file-actions .btn-secondary:hover {
+    background: #e2e8f0;
+    color: #2b6cb0;
+}
+
+.file-actions .btn-danger {
+    background: #e53e3e;
+    color: #fff;
+    border: 1px solid #e53e3e;
+}
+.file-actions .btn-danger:hover {
+    background: #c53030;
+    border-color: #c53030;
+}
+
+.file-actions .btn-primary {
+    background: #4299e1;
+    color: #fff;
+    border: 1px solid #4299e1;
+}
+.file-actions .btn-primary:hover {
+    background: #3182ce;
+    border-color: #3182ce;
+}
+@media (max-width: 600px) {
+    .dashboard-header,
+    .content-section,
+    .stat-card,
+    .profile-card {
+        padding: 12px 8px;
+        border-radius: 10px;
+        margin-bottom: 12px;
+    }
+
+    .dashboard-container {
+        padding: 6px;
+    }
+
+    .main-content {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .stats-bar {
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+
+    .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+        margin-bottom: 12px;
+    }
+
+    .session-header {
+        flex-direction: column;
+        gap: 8px;
+        align-items: flex-start;
+    }
+
+    .schedule-item {
+        padding: 12px;
+        margin-bottom: 10px;
+        border-radius: 10px;
+    }
+
+    .file-info-display {
+        padding: 8px;
+        border-radius: 7px;
+        font-size: 14px;
+    }
+
+    .file-meta {
+        gap: 8px;
+        font-size: 11px;
+    }
+
+    .file-actions {
+        flex-direction: column;
+        gap: 8px;
+        margin-top: 8px;
+    }
+
+    .file-actions .btn {
+        width: 100%;
+        justify-content: center;
+        font-size: 15px;
+        padding: 10px 0;
+    }
+
+    .profile-card {
+        padding: 10px;
+        border-radius: 8px;
+    }
+}
+.btn, .btn-primary, .btn-secondary, .btn-danger {
+    font-size: 16px;
+    padding: 12px 0;
+    width: 100%;
+    margin-bottom: 6px;
+    border-radius: 8px;
+}
+@media (max-width: 600px) {
+    .modal-content {
+        width: 98vw;
+        max-width: 98vw;
+        padding: 10px;
+        border-radius: 10px;
+    }
+}
+@media (max-width: 600px) {
+    table, thead, tbody, th, td, tr {
+        display: block;
+        width: 100%;
+    }
+    th, td {
+        padding: 10px 6px;
+        font-size: 15px;
+    }
+}

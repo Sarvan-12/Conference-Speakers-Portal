@@ -137,29 +137,23 @@ class SpeakerDashboard {
                         
                         ${hasFile ? `
     <div class="file-info-display">
-        <div class="file-name">
-            ${uploadedFile.stored_filename}
-            <a href="/${uploadedFile.stored_path.replace(/\\/g, '/')}/${uploadedFile.stored_filename}" target="_blank" class="btn btn-secondary" style="margin-left:10px;">
-    👁️ View
-</a>
-        </div>
+        <div class="file-name">${uploadedFile.stored_filename}</div>
         <div class="file-meta">
             <span>Size: ${this.formatFileSize(uploadedFile.file_size)}</span>
             <span>Uploaded: ${this.formatDate(uploadedFile.upload_date)}</span>
         </div>
     </div>
-` : ''}
-                        
-                        <div class="file-actions">
-    ${hasFile ? `
-        <button class="btn btn-danger" onclick="dashboard.deleteFile(${uploadedFile.file_id})">
-            🗑️ Delete File
-        </button>
-    ` : `
+    <div class="file-actions">
+        <a href="/${uploadedFile.stored_path.replace(/\\/g, '/')}/${uploadedFile.stored_filename}" target="_blank" class="btn btn-secondary">👁️ View</a>
+        <button class="btn btn-danger" onclick="dashboard.deleteFile(${uploadedFile.file_id})">🗑️ Delete</button>
+    </div>
+` : `
+    <div class="file-actions">
         <button class="btn btn-primary" onclick="dashboard.uploadFile('${session.schedule_id}', '${session.hall_name}', ${session.day_number}, '${session.session_title}')">
             📎 Upload Presentation
         </button>
-    `}
+    </div>
+`}
 </div>
                     </div>
                 </div>

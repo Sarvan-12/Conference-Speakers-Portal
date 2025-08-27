@@ -214,11 +214,13 @@ async populateScheduleForm() {
     const schedules = await schedulesRes.json();
 
     // Speakers
-    const speakerSel = document.getElementById('schedule-speaker');
-    speakerSel.innerHTML = '<option value="">Select Speaker</option>';
-    speakers.forEach(s => {
-        speakerSel.innerHTML += `<option value="${s.speaker_id}" data-title="${s.title || ''}">${s.full_name}</option>`;
-    });
+const speakerSel = document.getElementById('schedule-speaker');
+speakerSel.innerHTML = '<option value="">Select Speaker</option>';
+// Sort speakers alphabetically by trimmed full_name
+speakers.sort((a, b) => a.full_name.trim().localeCompare(b.full_name.trim()));
+speakers.forEach(s => {
+    speakerSel.innerHTML += `<option value="${s.speaker_id}" data-title="${s.title || ''}">${s.full_name}</option>`;
+});
 
     // Halls: Only show halls with at least one available slot
     const hallSel = document.getElementById('schedule-hall');

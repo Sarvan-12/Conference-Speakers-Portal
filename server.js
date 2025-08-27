@@ -568,17 +568,31 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'Something went wrong!' });
 });
 
-// Start server
 async function startServer() {
-  await initDatabase();
-  setTimeout(async () => {
-    await processUploadedFiles();
-  }, 2000);
-  app.listen(PORT, () => {
-    console.log(`🚀 Server running on http://localhost:${PORT}`);
-    console.log(`📊 Admin Panel: http://localhost:${PORT}/admin`);
-    console.log(`🔄 File processing available at: POST /api/process-files`);
-  });
+  try {
+    // Initialize DB
+    await initDatabase();
+    console.log("✅ Connected to MySQL database");
+
+    // Kick off file processing (after short delay)
+    setTimeout(async () => {
+      console.log("🔄 Starting file processing...");
+      await processUploadedFiles();
+    }, 2000);
+
+    // Start express server
+    app.listen(PORT, '0.0.0.0', () => {
+      console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+      console.log(`🚀 Server running on: http://localhost:${PORT}`);
+      console.log(`📊 Admin Panel: http://localhost:${PORT}/admin`);
+      console.log(`🔄 API Endpoint:     POST /api/process-files`);
+      console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+    });
+
+  } catch (err) {
+    console.error("❌ Failed to start server:", err);
+    process.exit(1);
+  }
 }
 
 // Get a single speaker by ID

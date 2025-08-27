@@ -6,6 +6,24 @@
     <title>Tech Innovation Summit 2025 - Schedule</title>
     <link rel="stylesheet" href="style.css">
 </head>
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+    try {
+        const res = await fetch('/api/halls');
+        const halls = await res.json();
+        if (halls.length > 0) {
+            document.getElementById('hall-title').textContent = halls[0].hall_name + " Schedule";
+            document.getElementById('hall-details').textContent = halls[0].location ? halls[0].location : '';
+        } else {
+            document.getElementById('hall-title').textContent = 'No halls found';
+            document.getElementById('hall-details').textContent = '';
+        }
+    } catch (err) {
+        document.getElementById('hall-title').textContent = 'Unable to load halls';
+        document.getElementById('hall-details').textContent = '';
+    }
+});
+</script>
 <body>
     <header class="main-header" style="background: linear-gradient(90deg, #1a237e 60%, #3949ab 100%); color: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.07); margin-bottom: 32px;">
     <div class="header-content" style="display: flex; align-items: center; justify-content: space-between; max-width: 1200px; margin: 0 auto; padding: 24px 32px;">
@@ -63,9 +81,9 @@
             <!-- Schedule Display -->
             <div id="schedule-container" class="schedule-container hidden">
                 <div class="current-hall">
-                    <h2 id="hall-title">Loading...</h2>
-                    <p id="hall-details">Please wait...</p>
-                </div>
+    <h2 id="hall-title"></h2>
+    <p id="hall-details"></p>
+</div>
 
                 <!-- Day Tabs -->
                 <div class="day-tabs" id="day-tabs">
